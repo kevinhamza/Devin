@@ -1,0 +1,99 @@
+# API Keys Configuration for Devin Project
+
+# General API Keys
+api_keys:
+  google_maps:
+    api_key: "YOUR_GOOGLE_MAPS_API_KEY"
+  aws_s3:
+    access_key: "YOUR_AWS_ACCESS_KEY"
+    secret_key: "YOUR_AWS_SECRET_KEY"
+  azure_cognitive_services:
+    subscription_key: "YOUR_AZURE_COGNITIVE_SERVICES_KEY"
+  openai:
+    api_key: "YOUR_OPENAI_API_KEY"
+  chatgpt:
+    api_key: "YOUR_CHATGPT_API_KEY"
+  copilot:
+    api_key: "YOUR_GITHUB_COPILOT_API_KEY"
+  gemini:
+    api_key: "YOUR_GEMINI_API_KEY"
+  pim_eye:
+    api_key: "YOUR_PIM_EYE_API_KEY"
+  face_recognition:
+    api_key: "YOUR_FACE_RECOGNITION_API_KEY"
+  iot_hub:
+    api_key: "YOUR_IOT_HUB_API_KEY"
+  smart_home_assistant:
+    webhook_url: "YOUR_SMART_HOME_ASSISTANT_WEBHOOK_URL"
+
+# Social Media API Keys
+social_media:
+  facebook:
+    app_id: "YOUR_FACEBOOK_APP_ID"
+    app_secret: "YOUR_FACEBOOK_APP_SECRET"
+  twitter:
+    api_key: "YOUR_TWITTER_API_KEY"
+    api_secret_key: "YOUR_TWITTER_API_SECRET_KEY"
+  instagram:
+    client_id: "YOUR_INSTAGRAM_CLIENT_ID"
+    client_secret: "YOUR_INSTAGRAM_CLIENT_SECRET"
+  linkedin:
+    client_id: "YOUR_LINKEDIN_CLIENT_ID"
+    client_secret: "YOUR_LINKEDIN_CLIENT_SECRET"
+
+# Cloud Services API Keys
+cloud_services:
+  aws_lambda:
+    access_key: "YOUR_AWS_LAMBDA_ACCESS_KEY"
+    secret_key: "YOUR_AWS_LAMBDA_SECRET_KEY"
+  google_cloud_storage:
+    project_id: "YOUR_GOOGLE_CLOUD_PROJECT_ID"
+    api_key: "YOUR_GOOGLE_CLOUD_API_KEY"
+
+# Encryption Keys
+encryption:
+  rsa_private_key: "YOUR_RSA_PRIVATE_KEY"
+  rsa_public_key: "YOUR_RSA_PUBLIC_KEY"
+  symmetric_key: "YOUR_SYMMETRIC_KEY"
+
+# Third-Party Services API Keys
+third_party_services:
+  sendgrid:
+    api_key: "YOUR_SENDGRID_API_KEY"
+  twilio:
+    account_sid: "YOUR_TWILIO_ACCOUNT_SID"
+    auth_token: "YOUR_TWILIO_AUTH_TOKEN"
+  pihole:
+    api_key: "YOUR_PIHOLE_API_KEY"
+
+# Local Service API Keys
+local_services:
+  database:
+    db_host: "YOUR_DATABASE_HOST"
+    db_user: "YOUR_DATABASE_USER"
+    db_password: "YOUR_DATABASE_PASSWORD"
+  mqtt:
+    broker_url: "YOUR_MQTT_BROKER_URL"
+    client_id: "YOUR_MQTT_CLIENT_ID"
+    username: "YOUR_MQTT_USERNAME"
+    password: "YOUR_MQTT_PASSWORD"
+
+# Custom Integration Keys
+custom_integrations:
+  device_management:
+    api_key: "YOUR_DEVICE_MANAGEMENT_API_KEY"
+  remote_access:
+    api_key: "YOUR_REMOTE_ACCESS_API_KEY"
+  telemetry:
+    api_key: "YOUR_TELEMETRY_API_KEY"
+
+# Testing and Debugging Keys
+testing:
+  zap:
+    api_key: "YOUR_ZAP_API_KEY"
+  wireshark:
+    api_key: "YOUR_WIRESHARK_API_KEY"
+
+# Notes:
+# - Replace "YOUR_API_KEY" placeholders with actual keys when deploying.
+# - Secure this file and restrict access to authorized personnel only.
