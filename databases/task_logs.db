@@ -1,17 +1,30 @@
 -- Schema for task_logs.db
 CREATE TABLE IF NOT EXISTS task_logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    task_id TEXT NOT NULL, -- Unique identifier for the task
     task_name TEXT NOT NULL,
-    status TEXT NOT NULL,
-    start_time DATETIME NOT NULL,
+    user_id INTEGER, -- Foreign key to reference user_profiles
+    start_time DATETIME DEFAULT CURRENT_TIMESTAMP,
     end_time DATETIME,
-    duration INTEGER,
-    additional_notes TEXT
+    status TEXT DEFAULT 'pending', -- 'pending', 'in_progress', 'completed', 'failed'
+    error_message TEXT, -- For storing any error details if the task fails
+    performance_metrics TEXT, -- JSON-encoded performance data
+    additional_data TEXT, -- JSON-encoded field for extensibility
+    FOREIGN KEY (user_id) REFERENCES user_profiles (id) ON DELETE CASCADE
 );
 
--- Example: Adding an index for quicker lookups by task_name
-CREATE INDEX IF NOT EXISTS idx_task_name ON task_logs(task_name);
+-- Example: Adding an index for quicker lookups by task_id
+CREATE INDEX IF NOT EXISTS idx_task_id ON task_logs(task_id);
 
 -- Example insert statement
-INSERT INTO task_logs (task_name, status, start_time, end_time, duration, additional_notes)
-VALUES ('Sample Task', 'Completed', '2024-12-26 10:00:00', '2024-12-26 11:00:00', 60, 'No issues encountered.');
+INSERT INTO task_logs (
+    task_id, task_name, user_id, status
+) VALUES (
+    'task_001', 'Image Processing Task', 1, 'in_progress'
+);
+
+-- Query to fetch all completed tasks
+SELECT * FROM task_logs WHERE status = 'completed';
+
+-- Query to get tasks for a specific user
+SELECT * FROM task_logs WHERE user_id = 1;
