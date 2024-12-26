@@ -1,0 +1,47 @@
+-- Robot Settings Database Schema
+
+-- Table to store general robot settings
+CREATE TABLE IF NOT EXISTS robot_general_settings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    robot_id TEXT NOT NULL,
+    setting_name TEXT NOT NULL, -- e.g., "Volume Level", "Speed Limit"
+    setting_value TEXT NOT NULL, -- e.g., "Medium", "5m/s"
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table to store network-related settings
+CREATE TABLE IF NOT EXISTS robot_network_settings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    robot_id TEXT NOT NULL,
+    network_name TEXT NOT NULL, -- e.g., "WiFi", "Ethernet"
+    network_status TEXT CHECK(network_status IN ('Connected', 'Disconnected')) DEFAULT 'Disconnected',
+    ip_address TEXT,
+    mac_address TEXT,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table to store task-specific configurations
+CREATE TABLE IF NOT EXISTS robot_task_settings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    robot_id TEXT NOT NULL,
+    task_name TEXT NOT NULL, -- e.g., "Delivery", "Surveillance"
+    configuration_details TEXT NOT NULL, -- JSON or structured string for configurations
+    is_active BOOLEAN DEFAULT 1,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table to store sensor calibration data
+CREATE TABLE IF NOT EXISTS robot_sensor_calibrations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    robot_id TEXT NOT NULL,
+    sensor_type TEXT NOT NULL, -- e.g., "Camera", "LIDAR"
+    calibration_data TEXT NOT NULL, -- JSON or structured data
+    calibration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    next_calibration_due TIMESTAMP
+);
+
+-- Indexes for efficient querying
+CREATE INDEX IF NOT EXISTS idx_robot_general_settings_robot_id ON robot_general_settings(robot_id);
+CREATE INDEX IF NOT EXISTS idx_robot_network_settings_robot_id ON robot_network_settings(robot_id);
+CREATE INDEX IF NOT EXISTS idx_robot_task_settings_robot_id ON robot_task_settings(robot_id);
+CREATE INDEX IF NOT EXISTS idx_robot_sensor_calibrations_robot_id ON robot_sensor_calibrations(robot_id);
