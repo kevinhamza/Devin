@@ -1,0 +1,38 @@
+-- Robot Behavior Database Schema
+
+-- Table to track robot activity logs
+CREATE TABLE IF NOT EXISTS robot_activity_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    robot_id TEXT NOT NULL,
+    activity_type TEXT NOT NULL, -- e.g., "Navigation", "Task Execution", "Idle"
+    activity_description TEXT,
+    activity_start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    activity_end_time TIMESTAMP,
+    status TEXT CHECK(status IN ('Completed', 'Failed', 'In Progress')) DEFAULT 'In Progress'
+);
+
+-- Table to track robot interactions with external systems
+CREATE TABLE IF NOT EXISTS robot_interactions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    robot_id TEXT NOT NULL,
+    interaction_type TEXT NOT NULL, -- e.g., "API Call", "Data Exchange", "Sensor Interaction"
+    interaction_details TEXT,
+    interaction_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    response_status TEXT CHECK(response_status IN ('Success', 'Error', 'Pending')) DEFAULT 'Pending'
+);
+
+-- Table to log abnormal robot behaviors
+CREATE TABLE IF NOT EXISTS robot_anomalies (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    robot_id TEXT NOT NULL,
+    anomaly_type TEXT NOT NULL, -- e.g., "Navigation Error", "Task Timeout", "Sensor Failure"
+    anomaly_description TEXT NOT NULL,
+    detected_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    resolution_status TEXT CHECK(resolution_status IN ('Resolved', 'Unresolved')) DEFAULT 'Unresolved',
+    resolution_details TEXT
+);
+
+-- Indexes for efficient querying
+CREATE INDEX IF NOT EXISTS idx_robot_activity_logs_robot_id ON robot_activity_logs(robot_id);
+CREATE INDEX IF NOT EXISTS idx_robot_interactions_robot_id ON robot_interactions(robot_id);
+CREATE INDEX IF NOT EXISTS idx_robot_anomalies_robot_id ON robot_anomalies(robot_id);
