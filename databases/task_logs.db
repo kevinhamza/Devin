@@ -1,0 +1,17 @@
+-- Schema for task_logs.db
+CREATE TABLE IF NOT EXISTS task_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    task_name TEXT NOT NULL,
+    status TEXT NOT NULL,
+    start_time DATETIME NOT NULL,
+    end_time DATETIME,
+    duration INTEGER,
+    additional_notes TEXT
+);
+
+-- Example: Adding an index for quicker lookups by task_name
+CREATE INDEX IF NOT EXISTS idx_task_name ON task_logs(task_name);
+
+-- Example insert statement
+INSERT INTO task_logs (task_name, status, start_time, end_time, duration, additional_notes)
+VALUES ('Sample Task', 'Completed', '2024-12-26 10:00:00', '2024-12-26 11:00:00', 60, 'No issues encountered.');
