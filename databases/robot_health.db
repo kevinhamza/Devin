@@ -1,0 +1,38 @@
+-- Robot Health Database Schema
+
+-- Table to track diagnostics of robots
+CREATE TABLE IF NOT EXISTS robot_diagnostics (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    robot_id TEXT NOT NULL,
+    diagnostic_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    diagnostic_details TEXT NOT NULL,
+    status TEXT CHECK(status IN ('Healthy', 'Warning', 'Critical')) NOT NULL,
+    last_maintenance_date TIMESTAMP,
+    next_maintenance_date TIMESTAMP
+);
+
+-- Table to track errors or faults
+CREATE TABLE IF NOT EXISTS robot_errors (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    robot_id TEXT NOT NULL,
+    error_code TEXT NOT NULL,
+    error_description TEXT NOT NULL,
+    occurrence_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    resolution_status TEXT CHECK(resolution_status IN ('Resolved', 'Unresolved')) DEFAULT 'Unresolved',
+    resolution_details TEXT
+);
+
+-- Table to track health metrics
+CREATE TABLE IF NOT EXISTS robot_health_metrics (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    robot_id TEXT NOT NULL,
+    metric_name TEXT NOT NULL,
+    metric_value REAL NOT NULL,
+    metric_unit TEXT NOT NULL,
+    recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Indexes for faster queries
+CREATE INDEX IF NOT EXISTS idx_robot_diagnostics_robot_id ON robot_diagnostics(robot_id);
+CREATE INDEX IF NOT EXISTS idx_robot_errors_robot_id ON robot_errors(robot_id);
+CREATE INDEX IF NOT EXISTS idx_robot_health_metrics_robot_id ON robot_health_metrics(robot_id);
