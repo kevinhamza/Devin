@@ -1,0 +1,29 @@
+-- Schema for user_profiles.db
+CREATE TABLE IF NOT EXISTS user_profiles (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL UNIQUE,
+    email TEXT NOT NULL UNIQUE,
+    hashed_password TEXT NOT NULL,
+    full_name TEXT,
+    date_of_birth DATE,
+    profile_picture BLOB,
+    join_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_login DATETIME,
+    preferences TEXT, -- JSON-encoded user preferences
+    access_level TEXT DEFAULT 'user', -- 'admin', 'user', or 'guest'
+    account_status TEXT DEFAULT 'active', -- 'active', 'suspended', 'deactivated'
+    additional_data TEXT -- JSON-encoded field for extensibility
+);
+
+-- Example: Adding an index for quicker lookups by username
+CREATE INDEX IF NOT EXISTS idx_username ON user_profiles(username);
+
+-- Example insert statement
+INSERT INTO user_profiles (
+    username, email, hashed_password, full_name, date_of_birth, preferences, access_level
+) VALUES (
+    'john_doe', 'john@example.com', 'hashed_password123', 'John Doe', '2000-01-01', '{"theme": "dark"}', 'user'
+);
+
+-- Query to fetch all active users
+SELECT * FROM user_profiles WHERE account_status = 'active';
