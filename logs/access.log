@@ -1,0 +1,9 @@
+# Access Log
+# Tracks all system access events.
+# Format: [Timestamp] - [User] - [Action] - [Status] - [IP Address]
+
+[2024-12-28 10:00:00] - admin - LOGIN - SUCCESS - 192.168.1.1
+[2024-12-28 10:05:12] - user123 - ACCESS_RESOURCE - SUCCESS - 192.168.1.2
+[2024-12-28 10:15:45] - user456 - LOGIN - FAILURE - 203.0.113.5
+[2024-12-28 10:20:30] - admin - UPDATE_CONFIG - SUCCESS - 192.168.1.1
+[2024-12-28 10:25:00] - user789 - LOGOUT - SUCCESS - 198.51.100.3
