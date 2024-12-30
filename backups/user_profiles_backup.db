@@ -1,0 +1,26 @@
+-- backups/user_profiles_backup.db
+-- SQL schema to handle user profiles backup
+
+CREATE TABLE IF NOT EXISTS user_profiles_backup (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    username TEXT NOT NULL,
+    email TEXT,
+    profile_picture_url TEXT,
+    data_backup BLOB NOT NULL,
+    backup_timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Indexes for faster queries
+CREATE INDEX IF NOT EXISTS idx_user_id ON user_profiles_backup (user_id);
+CREATE INDEX IF NOT EXISTS idx_backup_timestamp ON user_profiles_backup (backup_timestamp);
+
+-- Sample trigger for data integrity
+CREATE TRIGGER IF NOT EXISTS update_backup_timestamp
+AFTER UPDATE ON user_profiles_backup
+FOR EACH ROW
+BEGIN
+    UPDATE user_profiles_backup
+    SET backup_timestamp = CURRENT_TIMESTAMP
+    WHERE id = OLD.id;
+END;
