@@ -1,28 +1,34 @@
+Markdown
+
 # API Documentation
 
 ## Overview
+
 This document provides an overview of all API endpoints available in the Devin project. Each endpoint is designed to handle specific tasks, ranging from system management to AI integrations, ensuring robust and scalable operations.
 
 ---
 
 ## General Guidelines
-- **Base URL:** `https://api.devinproject.com/v1/`
-- **Authentication:** API uses token-based authentication. Include the token in the `Authorization` header as:
+
+* **Base URL:** `https://api.devinproject.com/v1/`
+* **Authentication:** API uses token-based authentication. Include the token in the `Authorization` header as:
+
 Authorization: Bearer <your_token_here>
 
-yaml
-Copy code
-- **Content-Type:** All endpoints accept and return JSON payloads unless stated otherwise.
-- **Rate Limits:** Refer to `ai_integrations/api_rate_limiter.py` for detailed rate limit policies.
 
----
+* **Content-Type:** All endpoints accept and return JSON payloads unless stated otherwise.
+* **Rate Limits:** Refer to `ai_integrations/api_rate_limiter.py` for detailed rate limit policies.
 
 ## Endpoints
 
-### 1. **User Management**
+### 1. User Management
+
 #### `POST /users/register`
-- **Description:** Register a new user.
-- **Request Payload:**
+
+* **Description:** Register a new user.
+
+* **Request Payload:**
+
 ```json
 {
   "username": "string",
@@ -30,24 +36,25 @@ Copy code
   "email": "string"
 }
 Response:
-json
-Copy code
+
 {
   "message": "User registered successfully",
   "userId": "string"
 }
 POST /users/login
 Description: Log in a user.
+
 Request Payload:
-json
-Copy code
+
+JSON
+
 {
   "username": "string",
   "password": "string"
 }
 Response:
-json
-Copy code
+JSON
+
 {
   "token": "string",
   "expiresIn": "number"
@@ -55,18 +62,22 @@ Copy code
 2. System Monitoring
 GET /monitoring/cpu-usage
 Description: Get the current CPU usage.
+
 Response:
-json
-Copy code
+
+JSON
+
 {
   "cpuUsage": "number",
   "timestamp": "string"
 }
 GET /monitoring/memory-tracker
 Description: Get memory usage statistics.
+
 Response:
-json
-Copy code
+
+JSON
+
 {
   "totalMemory": "number",
   "usedMemory": "number",
@@ -76,9 +87,10 @@ Copy code
 3. AI Integrations
 POST /ai/nlp/process
 Description: Process text using the NLP model.
+
 Request Payload:
-json
-Copy code
+
+
 {
   "text": "string",
   "options": {
@@ -87,8 +99,8 @@ Copy code
   }
 }
 Response:
-json
-Copy code
+JSON
+
 {
   "processedText": "string",
   "analysis": {
@@ -98,16 +110,18 @@ Copy code
 }
 POST /ai/object-detection/analyze
 Description: Perform object detection on an image.
+
 Request Payload:
-json
-Copy code
+
+JSON
+
 {
   "imageUrl": "string",
   "modelVersion": "v2"
 }
 Response:
-json
-Copy code
+JSON
+
 {
   "objectsDetected": [
     {
@@ -125,9 +139,11 @@ Copy code
 4. Robot Management
 POST /robot/configure
 Description: Configure robot settings.
+
 Request Payload:
-json
-Copy code
+
+JSON
+
 {
   "robotId": "string",
   "settings": {
@@ -136,20 +152,20 @@ Copy code
   }
 }
 Response:
-json
-Copy code
+JSON
+
 {
   "message": "Configuration updated successfully"
 }
 GET /robot/status
 Description: Retrieve the status of a robot.
+
 Request Params:
-c
-Copy code
+
 robotId=string
 Response:
-json
-Copy code
+JSON
+
 {
   "status": "string",
   "batteryLevel": "number",
@@ -158,11 +174,20 @@ Copy code
     "longitude": "number"
   }
 }
-Error Handling
+
+
+# Error Handling
 400 Bad Request: Invalid input data.
 401 Unauthorized: Missing or invalid authentication token.
 403 Forbidden: Access denied.
 500 Internal Server Error: An unexpected error occurred.
+
+
 Versioning
 Current API Version: v1.0
 Versioning strategy ensures backward compatibility.
+
+
+
+Contact
+For additional details or issues, contact our support team at support@devinproject.com
