@@ -1,101 +1,98 @@
-# Contributing to Devin Project
+# CONTRIBUTING GUIDE
 
-We welcome contributions from everyone. By participating in this project, you agree to abide by the code of conduct and contribute constructively. Below is a guide to help you get started with contributing to the Devin Project.
+Thank you for considering contributing to the **Devin Project**! We value all contributions, whether they involve reporting bugs, suggesting features, or writing code.
 
 ---
 
 ## Table of Contents
+1. [Getting Started](#getting-started)
+2. [Code of Conduct](#code-of-conduct)
+3. [How to Contribute](#how-to-contribute)
+4. [Setting Up the Environment](#setting-up-the-environment)
+5. [Coding Standards](#coding-standards)
+6. [Submitting Changes](#submitting-changes)
+7. [Bug Reporting Guidelines](#bug-reporting-guidelines)
+8. [Feature Request Guidelines](#feature-request-guidelines)
 
-* [How to Contribute](#how-to-contribute)
-* [Setting Up Your Environment](#setting-up-your-environment)
-* [Reporting Issues](#reporting-issues)
-* [Submitting Pull Requests](#submitting-pull-requests)
-* [Code Style and Standards](#code-style-and-standards)
-* [Project Structure Overview](#project-structure-overview)
-* [Community Guidelines](#community-guidelines)
-* [Resources](#resources)
+---
+
+## Getting Started
+
+To get started:
+1. Familiarize yourself with the project's architecture by reading [ARCHITECTURE.md](ARCHITECTURE.md).
+2. Look for open issues or features in the [GitHub Issues Tracker](#).
+3. Fork the repository and clone it locally.
+
+---
+
+## Code of Conduct
+
+Please adhere to our [Code of Conduct](CODE_OF_CONDUCT.md) to ensure a welcoming and inclusive environment for all.
 
 ---
 
 ## How to Contribute
 
-There are many ways you can contribute to the Devin Project:
-
-* **Fixing Bugs:** Help identify and resolve bugs in the codebase.
-* **Adding Features:** Propose and implement new features to enhance the project.
-* **Documentation:** Improve or add documentation to make the project easier to use and understand.
-* **Testing:** Write and improve tests to ensure the stability of the project.
-* **Feedback:** Provide feedback on existing features, design, or usability.
+You can contribute in the following ways:
+- Report bugs and vulnerabilities.
+- Suggest features or enhancements.
+- Contribute code (new features, bug fixes, tests, etc.).
+- Improve documentation.
 
 ---
 
-## Setting Up Your Environment
+## Setting Up the Environment
 
-1. **Clone the Repository:**
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/your-username/devin-project.git
 
-```bash
-git clone [https://github.com/your-organization/devin.git](https://github.com/your-organization/devin.git)
-cd devin
-Install Dependencies:
-Use the provided installation scripts:
+2. **Install dependencies:**
+    Ensure you have Python 3.9+ installed. Then run:
+   ```bash
+   pip install -r requirements.txt
+3. **Run tests:**
+   Use the test suite to verify changes :
+   ```bash
+   pytest tests/
 
-For Linux/macOS:
+---
+   
+## Coding Standards 
 
-Bash
+- Follow PEP 8: Ensure Python code adheres to the PEP 8 style guide.
+- Write Unit Tests: Include tests for any new feature or bug fix.
+- Document Your Code: Use docstrings and comments for better clarity.
 
-bash scripts/install.sh
-For Windows:
+---
 
-Bash
+### Submitting Changes
 
-scripts/setup.bat
-Run Tests to Verify Setup:
-Bash
+1. Create a new branch for your feature or bug fix:
+   ```bash
+   git checkout -b feature/your-feature-name
+2. Make your changes and commit them:
+   ```bash
+   git commit -m "Add detailed description of changes"
+3. Push the changes to your fork:
+   ```bash
+   git push origin feature/your-feature-name
+4. Create a pull request to the main repository.
 
-python -m unittest discover tests
-Reporting Issues
-Before reporting an issue, check the issues list to ensure it hasn't been reported already.
+---
 
-If it's a new issue, create a new issue with a detailed description, including:
+### Bug Reporting Guidelines
 
-Steps to reproduce the problem.
-Expected vs. actual behavior.
-Any relevant logs or screenshots.
-Submitting Pull Requests
-Create a Branch:
-Use a meaningful name for your branch:
+1. Include the following details:
+- Clear description of the bug.
+- Steps to reproduce the issue.
+- Expected and actual behavior.
+- Logs, screenshots, or videos (if applicable).
 
-Bash
+---
 
-git checkout -b feature/your-feature-name
-Make Your Changes:
-Commit your changes with descriptive and concise messages.
-Use multiple commits for large changes.
-Push Your Branch:
-Bash
+### Feature Request Guidelines
 
-git push origin feature/your-feature-name
-Open a Pull Request:
-Go to the repository, click on "New Pull Request," and provide a clear description of your changes.
-
-Code Style and Standards
-Follow PEP 8 for Python code.
-Use meaningful variable and function names.
-Add comments and docstrings where appropriate.
-Ensure your code passes all tests before submitting.
-Project Structure Overview
-ai_models/: Pre-trained models and their configurations.
-scripts/: Helper scripts for installation, management, and debugging.
-docs/: Project documentation files.
-tests/: Unit and integration tests.
-modules/: Core functionality and reusable modules.
-monitoring/: Monitoring tools and dashboards.
-Community Guidelines
-Be respectful and constructive in discussions.
-Help foster an inclusive environment.
-Acknowledge and credit others' work.
-Provide constructive feedback when reviewing contributions.
-Resources
-Documentation: Refer to the README.md for setup and usage.
-Code of Conduct: Please read the CODE_OF_CONDUCT.md before contributing.
-Communication: Join our community forum for discussions and support.
+- Provide a clear and concise description of the feature.
+- Explain the problem it solves and any alternatives considered.
+- Include potential implementation details, if possible.
