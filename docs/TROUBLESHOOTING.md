@@ -1,111 +1,147 @@
 # Troubleshooting Guide
 
-This comprehensive guide empowers you to identify and resolve common issues encountered within the system. Follow these steps for effective troubleshooting:
+This guide provides solutions to common issues encountered while using the Devin AI Project. If the issue persists, please consult our [support channels](#support).
+
+---
 
 ## Table of Contents
+- [General Issues](#general-issues)
+- [Installation Problems](#installation-problems)
+- [Runtime Errors](#runtime-errors)
+- [Module-Specific Issues](#module-specific-issues)
+- [API Integration Errors](#api-integration-errors)
+- [Advanced Debugging](#advanced-debugging)
+- [Contact Support](#contact-support)
 
-*   [General Troubleshooting Steps](#general-troubleshooting-steps)
-*   [Installation Issues](#installation-issues)
-*   [Configuration Errors](#configuration-errors)
-*   [Module-Specific Problems](#module-specific-problems)
-    *   [AI Integrations](#ai-integrations)
-    *   [Database](#database)
-    *   [Robot Manager](#robot-manager)
-*   [Performance Issues](#performance-issues)
-*   [Error Logs](#error-logs)
-*   [Contact Support](#contact-support)
+---
 
-## General Troubleshooting Steps
+## General Issues
 
-1.  **Check Logs:** Scrutinize the logs in the `logs/` directory to uncover error messages.
-2.  **Restart Services:** Reinitiate the application or affected services to refresh their state.
-3.  **Verify Dependencies:** Ensure all necessary dependencies are installed correctly for seamless operation.
-4.  **Update System:** Confirm you're utilizing the latest version of the software to benefit from bug fixes and enhancements.
-5.  **Rebuild the Project:**
+### Problem: Devin does not start after installation
+**Solution:**
+1. Verify that all dependencies are installed using:
+   ```bash
+   pip install -r requirements.txt
+2. Ensure the '.env' file is correctly configured.
+3. Check for missing files or directories in the 'logs/error.log'.
 
-```bash
-scripts/install.sh
-Installation Issues
-Symptom: Installation script fails
+----
 
-Cause: Missing permissions or incompatible dependency versions.
+### Problem: High resource usage
 
+### Solution:
+
+- Limit the number of active modules in the 'config/settings.yaml'.
+- Close unused applications running on the system.
+- Increase system RAM or CPU capacity if possible.
+
+----
+
+### Installation Problems
+
+### Problem: pip install fails
+
+### Solution:
+
+1. Upgrade pip:
+   ```bash
+   python -m pip install --upgrade pip
+2. Verify Python version is compatible (3.8 or higher).
+3. Run the installer in a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # For Linux/Mac
+   venv\Scripts\activate     # For Windows
+   pip install -r requirements.txt
+
+---
+
+### Problem: Permission denied during installation
+
+### Solution:
+
+- Use administrative privileges:
+  ```bash
+  sudo pip install -r requirements.txt  # For Linux/Mac
+
+---
+
+### Runtime Errors
+
+### Problem: API Key not recognized
+
+### Solution:
+
+1. Double-check API keys in the .env file.
+2. Ensure the keys are not expired.
+3. Test connectivity with:
+   ```bash
+   curl -X GET https://api.example.com/health
+
+### Problem: Module crashes unexpectedly
+
+### Solution:
+
+- Check module-specific logs in logs/<module_name>.log.
+- Restart Devin using:
+  ```bash
+  python main.py
+
+Module-Specific Issues
+Problem: Face recognition is inaccurate
 Solution:
 
-Run with Administrative Privileges:
-Bash
-
-sudo ./scripts/install.sh
-Verify Dependency Versions: Double-check the dependency versions listed in requirements.txt.
-Symptom: Missing modules
-
-Cause: Incorrect or incomplete installation.
-
-Solution: Reinstall using the installation script for a clean setup.
-
-Configuration Errors
-Symptom: .env file not found
-
-Cause: Misplaced or missing .env file, crucial for configuration.
-
+Ensure the camera resolution is adequate.
+Calibrate the face recognition module using:
+bash
+Copy code
+python modules/face_recognition/calibrate.py
+Update the face recognition library:
+bash
+Copy code
+pip install --upgrade face-recognition
+Problem: Social media automation fails
 Solution:
 
-Locate .env: Search for the .env file in the root directory.
-Regenerate (if missing): If missing, create it by copying .env.example to .env.
-Module-Specific Problems
-AI Integrations
-Symptom: API connection fails
-
-Cause: Invalid API keys or network connectivity issues.
-
+Recheck the API tokens in config/social_media.yaml.
+Verify internet connectivity.
+Update the module with:
+bash
+Copy code
+python scripts/update_module.py social_media
+API Integration Errors
+Problem: ChatGPT API requests timeout
 Solution:
 
-Verify API Keys: Ensure the API keys in config/api_keys.json are accurate and valid.
-Check Network Connectivity: Confirm a stable internet connection for successful communication.
-Database
-Symptom: Database migration errors
-
-Cause: Schema conflicts or outdated migration scripts.
-
-Solution: Run the migration script to resolve any schema discrepancies:
-
-Bash
-
-python scripts/migrate_data.py
-Robot Manager
-Symptom: Robot does not respond to commands
-
-Cause: Communication failure or misconfiguration.
-
+Verify the OpenAI API endpoint in ai_integrations/chatgpt_connector.py.
+Test connectivity with:
+bash
+Copy code
+ping api.openai.com
+Increase timeout settings in config/api_settings.yaml.
+Problem: Rate-limiting errors
 Solution:
 
-Verify Robot Connectivity: Ensure the robot can be reached by the system.
-Reconfigure (if needed): If necessary, use scripts/robot_configurator.py to reconfigure the robot.
-Performance Issues
-Symptom: High CPU or memory usage
-
-Cause: Inefficient queries or excessive processing within modules.
-
-Solution:
-
-Monitor Resource Usage: Utilize these commands to monitor resource usage:
-Bash
-
-python monitoring/cpu_usage.py
-python monitoring/memory_tracker.py
-Optimize Affected Module: Pinpoint and optimize the module causing the performance bottleneck.
-Error Logs
-Locating Logs
-All logs are meticulously stored within the logs/ directory for reference and troubleshooting purposes. Utilize scripts/cleanup_old_logs.py to maintain log size.
-
-Analyzing Logs
-Common error patterns to watch out for include:
-
-Missing dependencies
-Invalid configurations
-Timeouts
+Reduce the frequency of API calls in your scripts.
+Use the api_rate_limiter.py module to implement rate limits.
+Advanced Debugging
+Logging
+Enable verbose logging in the .env file:
+env
+Copy code
+LOG_LEVEL=DEBUG
+View detailed logs:
+bash
+Copy code
+tail -f logs/debug.log
+Diagnostic Tools
+Run diagnostics using:
+bash
+Copy code
+python scripts/diagnostic_tools.py
 Contact Support
-If the issue persists after following these steps, reach out to our support team for further assistance:
+If you’re unable to resolve the issue, reach out via:
 
-Email: support@devinproject.com
-Documentation: Refer to docs/ARCHITECTURE.md for in-depth system insights.
+Email: support@devinai.com
+Community Forum: Devin AI Forums
+GitHub Issues: Report an Issue
