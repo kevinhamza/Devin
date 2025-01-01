@@ -65,22 +65,16 @@ Devin supports voice commands via `speech_recognition` and `pyttsx3`.
 ## 🧩 Key Modules
 1. System Monitor
 - Provides real-time system performance metrics.
-- API Endpoint:  `/api/system-monitor`
 2. Threat Detection
 - Identifies and analyzes potential threats.
-- API Endpoint: `/api/threat-detection`
 3. Cloud Management
 - Manages AWS, GCP, Azure, and private cloud resources.
-- API Endpoint: `/api/cloud-management`
 4. Mobile Integration
 - Syncs with your mobile devices.
-- API Endpoint: `/api/mobile-integration`
 5. PC Controller
 - Allows full control over your PC, including file management and process automation.
-- API Endpoint: `/api/control-pc`
 6. Analytics Engine
 - Generates insights and reports.
-- API Endpoint: /api/analytics-report
 
 ## 🛡️ Security
 
