@@ -17,6 +17,7 @@
 ## 🛠️ Installation
 ### Prerequisites
 - Python 3.9 or higher
+- Cmake
 - Node.js and npm for frontend integration (optional)
 - Supported operating system (Windows, macOS, Linux, Android, IOS)
 
