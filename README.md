@@ -1,6 +1,6 @@
 # Devin: The Most Powerful AI Assistant  
 
-**Devin** is a groundbreaking AI assistant designed to perform virtually any task with unparalleled efficiency and intelligence. From ethical hacking to general-purpose utilities, Devin is equipped with cutting-edge features for developers, penetration testers, ethical hackers, cloud engineers, system administrators, and casual users alike.  
+**Devin** is a groundbreaking AI assistant designed to perform virtually any task with unparalleled efficiency and intelligence. From ethical hacking to general-purpose utilities, Devin is equipped with cutting-edge features for developers, penetration testers, ethical hackers, cloud engineers, system administrators, and casual users alike.
 
 ## 🚀 Features  
 - **Voice and Command Control**: Interact with Devin using voice commands or text inputs to perform tasks seamlessly.  
@@ -46,14 +46,14 @@
     ```
 5. Set Up Environment Variables:
 - Create a .env file with the required environment variables:
-  ```bash
-  API_KEY=your_api_key_here  
-  CLOUD_SECRET=your_cloud_secret_here  
+   ```bash
+   API_KEY=your_api_key_here  
+   CLOUD_SECRET=your_cloud_secret_here  
    ```
 6. Run the Application:
-  ```bash
-  python main.py
-  ```
+   ```bash
+   python main.py
+   ```
 7. Access Devin:
 - Open your browser and navigate to http://localhost:1337.
 
