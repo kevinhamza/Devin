@@ -23,7 +23,7 @@
 ### Steps
 1. Create a New Virtual Environment (if needed):
     ```bash
-    python3.11 -m venv venv
+    python -m venv venv
     source venv/bin/activate  # On Windows: venv\Scripts\activate
     ```
     
