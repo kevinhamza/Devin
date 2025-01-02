@@ -43,7 +43,8 @@ user_voice_id = "unique_user_id_here"  # Replace with the actual user voice ID
 
 # Initialize AI modules
 chatgpt = ChatGPTConnector(api_key=chatgpt_api_key)
-gemini = GeminiConnector(api_key=gemini_api_key) if gemini_api_key else GeminiConnector()
+# gemini = GeminiConnector(api_key=gemini_api_key) if gemini_api_key else GeminiConnector()
+gemini = GeminiConnector()
 
 # Initialize system modules
 voice_assistant = VoiceAssistant(wake_word, user_voice_id)
