@@ -5,10 +5,8 @@ import threading
 from dotenv import load_dotenv
 from pynput.mouse import Controller as MouseController
 from pynput.keyboard import Controller as KeyboardController
-from modules.voice_assistant import VoiceAssistant
 from modules.gesture_recognition import GestureRecognition
 from modules.system_control import SystemControl
-from modules.ai_connector import AIConnector
 from ai_integrations.chatgpt_connector import ChatGPTConnector
 from ai_integrations.gemini_connector import GeminiConnector
 from cloud.aws_integration import AWSIntegration
@@ -46,17 +44,11 @@ logger = setup_logger("Devin")
 mouse = MouseController()
 keyboard = KeyboardController()
 
-# Global assistant configuration
-assistant_name = "Devin"
-wake_word = f"Hey {assistant_name}"
-user_voice_id = "unique_user_id_here"  # Replace with the actual user voice ID
-
 # Initialize AI modules
 chatgpt = ChatGPTConnector(api_key=chatgpt_api_key)
-gemini = GeminiConnector()  # Optional if Gemini is available
+gemini = GeminiConnector()  # Comment out if Gemini is not needed
 
 # Initialize system modules
-voice_assistant = VoiceAssistant(wake_word, user_voice_id, api_key=chatgpt_api_key)
 gesture_recognizer = GestureRecognition()
 system_controller = SystemControl()
 cpu_monitor = get_cpu_usage
@@ -66,49 +58,41 @@ analytics_dashboard = collect_system_metrics
 aws_integration = AWSIntegration()
 
 # Define tasks
-def handle_voice_command(command):
+def handle_ai_conversation(command):
     """
-    Process voice commands and execute corresponding tasks.
+    Process AI-based conversation requests and execute corresponding tasks.
     """
     try:
-        logger.info(f"Received voice command: {command}")
-        if "open browser" in command:
-            system_controller.open_application("browser")
-        elif "shutdown system" in command:
-            system_controller.shutdown()
-        elif "control mouse" in command:
-            control_mouse_with_gesture()
-        else:
-            response = chatgpt.get_response(command)
-            logger.info(f"ChatGPT response: {response}")
-            voice_assistant.speak(response)
+        logger.info(f"Received command: {command}")
+        response = chatgpt.get_response(command)
+        logger.info(f"ChatGPT response: {response}")
+        print(response)  # For logging the response to the terminal or UI
     except Exception as e:
-        logger.error(f"Error handling voice command: {e}")
-        voice_assistant.speak("Sorry, I encountered an error processing your command.")
+        logger.error(f"Error handling AI conversation: {e}")
+        print("Sorry, I encountered an error processing your request.")
 
 def control_mouse_with_gesture():
     """
     Enable gesture-based mouse control.
     """
     logger.info("Activating gesture-based mouse control...")
-    voice_assistant.speak("Gesture-based mouse control activated. Use hand gestures to control the pointer.")
+    print("Gesture-based mouse control activated. Use hand gestures to control the pointer.")
     gesture_recognizer.start_recognition(mouse)
 
 def monitor_resources():
     """
     Monitor system resources and provide insights.
     """
-    with app.app_context():  # Ensure the app context is active
-        while True:
-            try:
-                cpu_usage = cpu_monitor()
-                logger.info(f"CPU usage: {cpu_usage}%")
-                if cpu_usage > 90:
-                    voice_assistant.speak("Warning: CPU usage is critically high!")
-                time.sleep(10)
-            except Exception as e:
-                logger.error(f"Error monitoring resources: {e}")
-                time.sleep(10)  # Ensure we don't break the loop on error
+    while True:
+        try:
+            cpu_usage = cpu_monitor()
+            logger.info(f"CPU usage: {cpu_usage}%")
+            if cpu_usage > 90:
+                print("Warning: CPU usage is critically high!")
+            time.sleep(10)
+        except Exception as e:
+            logger.error(f"Error monitoring resources: {e}")
+            time.sleep(10)  # Ensure we don't break the loop on error
 
 def perform_cloud_tasks():
     """
@@ -129,51 +113,29 @@ def keyboard_typing_simulation(text):
         keyboard.type(char)
         time.sleep(0.1)
 
-def chat_conversation():
-    """
-    Chat-based conversation loop allowing interaction with the assistant.
-    """
-    while True:
-        try:
-            user_input = input(f"{assistant_name}: How can I assist you today?\nYou: ")
-            if user_input.lower() == "exit":
-                print("Ending conversation. Goodbye!")
-                break
-            # Use ChatGPT to respond
-            response = chatgpt.get_response(user_input)
-            print(f"{assistant_name}: {response}")
-        except Exception as e:
-            logger.error(f"Error in chat conversation: {e}")
-            print(f"{assistant_name}: An unexpected error occurred.")
-
 # Main loop
 def main():
-    logger.info(f"Starting {assistant_name}...")
-    voice_assistant.speak(f"Hello! {assistant_name} is ready.")
-    
+    logger.info(f"Starting Devin...")
+    print("Devin is ready.")
+
     # Start monitoring in a separate thread
     threading.Thread(target=monitor_resources, daemon=True).start()
 
-    # Start cloud task thread (if needed)
+    # Start cloud tasks in a separate thread
     threading.Thread(target=perform_cloud_tasks, daemon=True).start()
 
-    # Start chat conversation in the background
-    threading.Thread(target=chat_conversation, daemon=True).start()
-
-    # Listen for voice commands or use chat-based input
+    # Listen for commands or user input (you can replace this with any method to trigger conversation)
     while True:
         try:
-            command = voice_assistant.listen()
-            if command and wake_word.lower() in command.lower():
-                command = command.replace(wake_word, "").strip()
-                handle_voice_command(command)
+            command = input("You: ")  # Replace with a real input method or command handling system
+            handle_ai_conversation(command)
         except KeyboardInterrupt:
             logger.info("Shutting down Devin...")
-            voice_assistant.speak("Goodbye!")
+            print("Goodbye!")
             sys.exit(0)
         except Exception as e:
             logger.error(f"Error in main loop: {e}")
-            voice_assistant.speak("An unexpected error occurred.")
+            print("An unexpected error occurred.")
 
 if __name__ == "__main__":
     main()
