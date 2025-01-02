@@ -66,6 +66,7 @@ aiosignal==1.3.1
 sounddevice
 SpeechRecognition
 pynput
+textblob
 pyaudio
 voice-assistant
 matplotlib
