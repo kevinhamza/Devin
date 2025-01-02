@@ -54,8 +54,8 @@ def get_entry_points():
 setup(
     name="Devin",
     version=get_version(),
-    author="Your Name",
-    author_email="your_email@example.com",
+    author="Kevin Hamza",
+    author_email="kevin.x.hamza@gmail.com",
     description="Devin AI - The most powerful and versatile AI assistant.",
     long_description=get_long_description(),
     long_description_content_type="text/markdown",
