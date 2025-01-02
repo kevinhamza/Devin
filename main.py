@@ -1,7 +1,8 @@
-import os
 import sys
+import os
 import time
 import threading
+from dotenv import load_dotenv
 from pynput.mouse import Controller as MouseController
 from pynput.keyboard import Controller as KeyboardController
 from modules.voice_assistant import VoiceAssistant
@@ -15,6 +16,19 @@ from monitoring.cpu_usage import get_cpu_usage
 from monitoring.analytics_dashboard import collect_system_metrics
 from utils.logger import setup_logger
 
+# Load environment variables
+load_dotenv()
+
+# Validate API keys
+chatgpt_api_key = os.getenv("CHATGPT_API_KEY")
+if not chatgpt_api_key:
+    raise ValueError("API key for ChatGPT is not configured. Please set it in the .env file.")
+
+gemini_api_key = os.getenv("GEMINI_API_KEY")  # Optional
+# Uncomment and validate if Gemini requires an API key:
+# if not gemini_api_key:
+#     raise ValueError("API key for Gemini is not configured. Please set it in the .env file.")
+
 # Initialize logger
 logger = setup_logger("Devin")
 
@@ -25,28 +39,18 @@ keyboard = KeyboardController()
 # Global assistant configuration
 assistant_name = "Devin"
 wake_word = f"Hey {assistant_name}"
-user_voice_id = "user123"  # Replace with unique user voice ID
+user_voice_id = "unique_user_id_here"  # Replace with the actual user voice ID
 
 # Initialize AI modules
-chatgpt = ChatGPTConnector(api_key=os.getenv("CHATGPT_API_KEY"))
-# gemini = GeminiConnector(api_key=os.getenv("GEMINI_API_KEY"))
-gemini = GeminiConnector()
-
-# Define the wake word and user voice ID
-wake_word = "Hey Devin"
-user_voice_id = "unique_user_id_here"
-
-# Instantiate the VoiceAssistant with those arguments
-voice_assistant = VoiceAssistant(wake_word, user_voice_id)
-voice_assistant.start()
-
+chatgpt = ChatGPTConnector(api_key=chatgpt_api_key)
+gemini = GeminiConnector(api_key=gemini_api_key) if gemini_api_key else GeminiConnector()
 
 # Initialize system modules
-# voice_assistant = VoiceAssistant(wake_word, user_voice_id)
-gesture_recognizer = GestureRecognizer()
-system_controller = SystemController()
-cpu_monitor = CPUUsageMonitor()
-analytics_dashboard = AnalyticsDashboard()
+voice_assistant = VoiceAssistant(wake_word, user_voice_id)
+gesture_recognizer = GestureRecognition()
+system_controller = SystemControl()
+cpu_monitor = get_cpu_usage
+analytics_dashboard = collect_system_metrics
 
 # Cloud integrations
 aws_integration = AWSIntegration()
@@ -85,7 +89,7 @@ def monitor_resources():
     Monitor system resources and provide insights.
     """
     while True:
-        cpu_usage = cpu_monitor.get_cpu_usage()
+        cpu_usage = cpu_monitor()
         logger.info(f"CPU usage: {cpu_usage}%")
         if cpu_usage > 90:
             voice_assistant.speak("Warning: CPU usage is critically high!")
