@@ -6,11 +6,11 @@ import threading
 from modules.gesture_recognition import GestureRecognition
 from ai_integrations.chatgpt_connector import ChatGPTConnector
 from modules.system_control import SystemControl
-from modules.nlp_processing import NLPProcessor
+from modules.nlp_processing import NLPProcessing
 
 
 class VoiceAssistant:
-    def __init__(self):
+    def __init__(self, wake_word="Hey Devin", user_voice_id=None):
         # Initialize TTS engine
         self.tts_engine = pyttsx3.init()
         self.tts_engine.setProperty('rate', 160)  # Speed of speech
@@ -21,10 +21,13 @@ class VoiceAssistant:
         self.microphone = sr.Microphone()
 
         # Wake word for activation
-        self.wake_word = "Hey Devin"
+        self.wake_word = wake_word
+
+        # User voice ID (if needed)
+        self.user_voice_id = user_voice_id
 
         # NLP Processor
-        self.nlp_processor = NLPProcessor()
+        self.nlp_processor = NLPProcessing()
 
         # Gesture Recognition for multitasking
         self.gesture_recognition = GestureRecognition()
