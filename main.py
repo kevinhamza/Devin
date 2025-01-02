@@ -47,7 +47,8 @@ chatgpt = ChatGPTConnector(api_key=chatgpt_api_key)
 gemini = GeminiConnector()
 
 # Initialize system modules
-voice_assistant = VoiceAssistant(wake_word, user_voice_id)
+# voice_assistant = VoiceAssistant(wake_word, user_voice_id)
+voice_assistant = VoiceAssistant(wake_word, user_voice_id, api_key=chatgpt_api_key)
 gesture_recognizer = GestureRecognition()
 system_controller = SystemControl()
 cpu_monitor = get_cpu_usage
