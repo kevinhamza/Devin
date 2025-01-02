@@ -32,7 +32,7 @@ if not chatgpt_api_key:
     raise ValueError("API key for ChatGPT is not configured. Please set it in the .env file.")
 
 gemini_api_key = os.getenv("GEMINI_API_KEY")  # Optional, handle if available
-gemini = GeminiConnector(api_key=gemini_api_key) if gemini_api_key else GeminiConnector()
+gemini = GeminiConnector()
 
 # Initialize logger
 logger = setup_logger("Devin")
