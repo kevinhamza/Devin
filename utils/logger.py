@@ -1,10 +1,11 @@
 import logging
 
-def setup_logger():
+def setup_logger(logger_name="DevinLogger"):
     """
     Set up the logger for the Devin project.
+    Allows specifying a custom logger name.
     """
-    logger = logging.getLogger('DevinLogger')
+    logger = logging.getLogger(logger_name)
     logger.setLevel(logging.DEBUG)  # Adjust log level as needed (e.g., DEBUG, INFO)
     
     # Create a console handler to display logs in the terminal
