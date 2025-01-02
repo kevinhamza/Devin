@@ -71,6 +71,7 @@ pyaudio
 voice-assistant
 matplotlib
 psutil
+azure-ai-textanalytics
 alembic==1.13.1
 annotated-types==0.6.0
 anyio==4.3.0
