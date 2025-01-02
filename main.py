@@ -1,118 +1,127 @@
-"""
-DO NOT REARRANGE THE ORDER OF FUNCTION CALLS AND VARIABLE DECLARATIONS
-AS IT MAY CAUSE IMPORT ERRORS AND OTHER ISSUES
-"""
-from gevent import monkey
-monkey.patch_all()
-
-from flask import Flask, request, jsonify
-from flask_cors import CORS
 import os
-import logging
-from threading import Thread
-import tiktoken
-import speech_recognition as sr
-import pyttsx3
+import sys
+import time
+import threading
+from pynput.mouse import Controller as MouseController
+from pynput.keyboard import Controller as KeyboardController
+from voice_assistant import VoiceAssistant
+from modules.gesture_recognition import GestureRecognizer
+from modules.system_control import SystemController
+from modules.ai_connector import AIConnector
+from ai_integrations.chatgpt_connector import ChatGPTConnector
+from ai_integrations.gemini_connector import GeminiConnector
+from cloud.aws_integration import AWSIntegration
+from monitoring.cpu_usage import CPUUsageMonitor
+from monitoring.analytics_dashboard import AnalyticsDashboard
+from utils.logger import setup_logger
 
-# Custom modules from your folder structure
-from modules.server import ServerManager
-from monitoring.analytics_dashboard import SystemMonitor
-from security.threat_modeling import ThreatDetection
-from cloud.private_cloud_integration import CloudManager
-from plugins.speech_recognition import SpeechRecognizer
-from backups.config_backup import BackupManager
-from prototypes.neural_network import NeuralNetworkPrototype
-from config.other import Config
-from scripts.generate_ssl_certificate import SSLManager
-from databases.pentest_results import PentestResults
-from core_service import CoreService
+# Initialize logger
+logger = setup_logger("Devin")
 
-# Initialize Flask app
-app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": ["https://localhost:3000", "http://localhost:3000"]}})
+# Mouse and keyboard controllers
+mouse = MouseController()
+keyboard = KeyboardController()
 
-# Logging configuration
-log = logging.getLogger("werkzeug")
-log.disabled = True
+# Global assistant configuration
+assistant_name = "Devin"
+wake_word = f"Hey {assistant_name}"
+user_voice_id = "user123"  # Replace with unique user voice ID
 
-# Initialize modules
-TIKTOKEN_ENC = tiktoken.get_encoding("cl100k_base")
-os.environ["TOKENIZERS_PARALLELISM"] = "false"
+# Initialize AI modules
+chatgpt = ChatGPTConnector(api_key=os.getenv("CHATGPT_API_KEY"))
+gemini = GeminiConnector(api_key=os.getenv("GEMINI_API_KEY"))
 
-server_manager = ServerManager()
-system_monitor = SystemMonitor()
-threat_detection = ThreatDetection()
-cloud_manager = CloudManager()
-speech_recognizer = SpeechRecognizer()
-backup_manager = BackupManager()
-neural_network = NeuralNetworkPrototype()
-config = Config()
-ssl_manager = SSLManager()
-pentest_results = PentestResults()
-core_service = CoreService()
+# Initialize system modules
+voice_assistant = VoiceAssistant(wake_word, user_voice_id)
+gesture_recognizer = GestureRecognizer()
+system_controller = SystemController()
+cpu_monitor = CPUUsageMonitor()
+analytics_dashboard = AnalyticsDashboard()
 
-# Speech and voice setup
-recognizer = sr.Recognizer()
-engine = pyttsx3.init()
+# Cloud integrations
+aws_integration = AWSIntegration()
 
-def speak(text):
-    engine.say(text)
-    engine.runAndWait()
-
-def listen_to_voice():
+# Define tasks
+def handle_voice_command(command):
+    """
+    Process voice commands and execute corresponding tasks.
+    """
     try:
-        with sr.Microphone() as source:
-            speak("Listening for your command.")
-            audio = recognizer.listen(source)
-            command = recognizer.recognize_google(audio)
-            return command.lower()
+        logger.info(f"Received voice command: {command}")
+        if "open browser" in command:
+            system_controller.open_application("browser")
+        elif "shutdown system" in command:
+            system_controller.shutdown()
+        elif "control mouse" in command:
+            control_mouse_with_gesture()
+        else:
+            response = chatgpt.get_response(command)
+            logger.info(f"ChatGPT response: {response}")
+            voice_assistant.speak(response)
     except Exception as e:
-        logging.error(f"Voice recognition error: {e}")
-        return None
+        logger.error(f"Error handling voice command: {e}")
+        voice_assistant.speak("Sorry, I encountered an error processing your command.")
 
-@app.route("/api/system-monitor", methods=["GET"])
-def get_system_stats():
-    stats = system_monitor.collect_stats()
-    return jsonify(stats)
+def control_mouse_with_gesture():
+    """
+    Enable gesture-based mouse control.
+    """
+    logger.info("Activating gesture-based mouse control...")
+    voice_assistant.speak("Gesture-based mouse control activated. Use hand gestures to control the pointer.")
+    gesture_recognizer.start_recognition(mouse)
 
-@app.route("/api/threat-detection", methods=["POST"])
-def detect_threats():
-    data = request.json
-    threat_report = threat_detection.analyze(data)
-    return jsonify(threat_report)
+def monitor_resources():
+    """
+    Monitor system resources and provide insights.
+    """
+    while True:
+        cpu_usage = cpu_monitor.get_cpu_usage()
+        logger.info(f"CPU usage: {cpu_usage}%")
+        if cpu_usage > 90:
+            voice_assistant.speak("Warning: CPU usage is critically high!")
+        time.sleep(10)
 
-@app.route("/api/cloud-management", methods=["POST"])
-def manage_cloud():
-    data = request.json
-    response = cloud_manager.handle_request(data)
-    return jsonify(response)
+def perform_cloud_tasks():
+    """
+    Handle cloud-related tasks.
+    """
+    try:
+        logger.info("Performing cloud operations...")
+        aws_integration.sync_files()
+    except Exception as e:
+        logger.error(f"Cloud operation error: {e}")
 
-@app.route("/api/voice-command", methods=["GET"])
-def voice_command():
-    command = listen_to_voice()
-    if command:
-        response = server_manager.execute(command)
-        speak(response.get("message", "Command executed"))
-        return jsonify(response)
-    else:
-        return jsonify({"error": "Could not understand the voice command"})
+def keyboard_typing_simulation(text):
+    """
+    Simulate keyboard typing for automation tasks.
+    """
+    logger.info(f"Typing text: {text}")
+    for char in text:
+        keyboard.type(char)
+        time.sleep(0.1)
 
-@app.route("/api/logs", methods=["GET"])
-def logs():
-    logs = backup_manager.get_logs()
-    return jsonify({"logs": logs})
-
-@app.route("/api/status", methods=["GET"])
-def status():
-    return jsonify({"status": "Devin is running!"})
-
-@app.route("/api/neural-network", methods=["POST"])
-def neural_network_task():
-    data = request.json
-    task_result = neural_network.run_task(data)
-    return jsonify({"result": task_result})
+# Main loop
+def main():
+    logger.info(f"Starting {assistant_name}...")
+    voice_assistant.speak(f"Hello! {assistant_name} is ready.")
+    
+    # Start monitoring in a separate thread
+    threading.Thread(target=monitor_resources, daemon=True).start()
+    
+    # Listen for commands
+    while True:
+        try:
+            command = voice_assistant.listen()
+            if wake_word.lower() in command.lower():
+                command = command.replace(wake_word, "").strip()
+                handle_voice_command(command)
+        except KeyboardInterrupt:
+            logger.info("Shutting down Devin...")
+            voice_assistant.speak("Goodbye!")
+            sys.exit(0)
+        except Exception as e:
+            logger.error(f"Error in main loop: {e}")
+            voice_assistant.speak("An unexpected error occurred.")
 
 if __name__ == "__main__":
-    logging.info("Devin is up and running!")
-    speak("Devin is ready for your commands.")
-    app.run(debug=False, port=1337, host="0.0.0.0")
+    main()
