@@ -19,25 +19,20 @@ from utils.logger import setup_logger
 # Load environment variables
 load_dotenv()
 
-# Now you can access the AWS credentials from the environment variables
+# Print the values for debugging (ensure sensitive information is not exposed in production)
 aws_access_key = os.getenv('AWS_ACCESS_KEY')
 aws_secret_key = os.getenv('AWS_SECRET_KEY')
-
-print(f"AWS Access Key: {aws_access_key}")
-print(f"AWS Secret Key: {aws_secret_key}")
 
 if not aws_access_key or not aws_secret_key:
     raise EnvironmentError("AWS_ACCESS_KEY and AWS_SECRET_KEY must be set in .env file.")
 
-# Validate API keys
+# Validate API keys for AI integrations
 chatgpt_api_key = os.getenv("CHATGPT_API_KEY")
 if not chatgpt_api_key:
     raise ValueError("API key for ChatGPT is not configured. Please set it in the .env file.")
 
-gemini_api_key = os.getenv("GEMINI_API_KEY")  # Optional
-# Uncomment and validate if Gemini requires an API key:
-# if not gemini_api_key:
-#     raise ValueError("API key for Gemini is not configured. Please set it in the .env file.")
+gemini_api_key = os.getenv("GEMINI_API_KEY")  # Optional, handle if available
+gemini = GeminiConnector(api_key=gemini_api_key) if gemini_api_key else GeminiConnector()
 
 # Initialize logger
 logger = setup_logger("Devin")
@@ -53,11 +48,8 @@ user_voice_id = "unique_user_id_here"  # Replace with the actual user voice ID
 
 # Initialize AI modules
 chatgpt = ChatGPTConnector(api_key=chatgpt_api_key)
-# gemini = GeminiConnector(api_key=gemini_api_key) if gemini_api_key else GeminiConnector()
-gemini = GeminiConnector()
 
 # Initialize system modules
-# voice_assistant = VoiceAssistant(wake_word, user_voice_id)
 voice_assistant = VoiceAssistant(wake_word, user_voice_id, api_key=chatgpt_api_key)
 gesture_recognizer = GestureRecognition()
 system_controller = SystemControl()
@@ -101,11 +93,15 @@ def monitor_resources():
     Monitor system resources and provide insights.
     """
     while True:
-        cpu_usage = cpu_monitor()
-        logger.info(f"CPU usage: {cpu_usage}%")
-        if cpu_usage > 90:
-            voice_assistant.speak("Warning: CPU usage is critically high!")
-        time.sleep(10)
+        try:
+            cpu_usage = cpu_monitor()
+            logger.info(f"CPU usage: {cpu_usage}%")
+            if cpu_usage > 90:
+                voice_assistant.speak("Warning: CPU usage is critically high!")
+            time.sleep(10)
+        except Exception as e:
+            logger.error(f"Error monitoring resources: {e}")
+            time.sleep(10)  # Ensure we don't break the loop on error
 
 def perform_cloud_tasks():
     """
@@ -134,6 +130,9 @@ def main():
     # Start monitoring in a separate thread
     threading.Thread(target=monitor_resources, daemon=True).start()
     
+    # Start cloud task thread (if needed)
+    threading.Thread(target=perform_cloud_tasks, daemon=True).start()
+
     # Listen for commands
     while True:
         try:
