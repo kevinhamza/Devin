@@ -10,6 +10,7 @@ import time
 from datetime import datetime
 import logging
 from flask import Flask, jsonify
+from threading import Thread
 
 # Constants
 LOG_FILE = "monitoring/cpu_usage.log"
@@ -66,6 +67,14 @@ def monitor_cpu(interval=5):
     except KeyboardInterrupt:
         print("CPU monitoring stopped.")
 
+def run_monitoring_in_background(interval=5):
+    """
+    Run the CPU monitoring in the background while the Flask app is running.
+    """
+    monitor_thread = Thread(target=monitor_cpu, args=(interval,))
+    monitor_thread.daemon = True  # Allows thread to exit when the program exits
+    monitor_thread.start()
+
 if __name__ == "__main__":
     import argparse
 
@@ -77,6 +86,7 @@ if __name__ == "__main__":
 
     if args.api:
         print("Starting CPU Usage Monitoring API server...")
+        run_monitoring_in_background(interval=args.interval)  # Run monitoring in the background
         app.run(host='0.0.0.0', port=5000)
     else:
         print(f"Starting CPU Usage Monitoring (Interval: {args.interval}s)...")
