@@ -4,9 +4,9 @@ import time
 import threading
 from pynput.mouse import Controller as MouseController
 from pynput.keyboard import Controller as KeyboardController
-from voice_assistant import VoiceAssistant
-from modules.gesture_recognition import GestureRecognizer
-from modules.system_control import SystemController
+from modules.voice_assistant import VoiceAssistant
+from modules.gesture_recognition import GestureRecognition
+from modules.system_control import SystemControl
 from modules.ai_connector import AIConnector
 from ai_integrations.chatgpt_connector import ChatGPTConnector
 from ai_integrations.gemini_connector import GeminiConnector
