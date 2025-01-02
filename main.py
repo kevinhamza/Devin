@@ -19,6 +19,13 @@ from utils.logger import setup_logger
 # Load environment variables
 load_dotenv()
 
+# Now you can access the AWS credentials from the environment variables
+aws_access_key = os.getenv('AWS_ACCESS_KEY')
+aws_secret_key = os.getenv('AWS_SECRET_KEY')
+
+if not aws_access_key or not aws_secret_key:
+    raise EnvironmentError("AWS_ACCESS_KEY and AWS_SECRET_KEY must be set in .env file.")
+
 # Validate API keys
 chatgpt_api_key = os.getenv("CHATGPT_API_KEY")
 if not chatgpt_api_key:
