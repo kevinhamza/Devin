@@ -11,8 +11,8 @@ from modules.ai_connector import AIConnector
 from ai_integrations.chatgpt_connector import ChatGPTConnector
 from ai_integrations.gemini_connector import GeminiConnector
 from cloud.aws_integration import AWSIntegration
-from monitoring.cpu_usage import CPUUsageMonitor
-from monitoring.analytics_dashboard import AnalyticsDashboard
+from monitoring.cpu_usage import get_cpu_usage
+from monitoring.analytics_dashboard import collect_system_metrics
 from utils.logger import setup_logger
 
 # Initialize logger
@@ -29,10 +29,20 @@ user_voice_id = "user123"  # Replace with unique user voice ID
 
 # Initialize AI modules
 chatgpt = ChatGPTConnector(api_key=os.getenv("CHATGPT_API_KEY"))
-gemini = GeminiConnector(api_key=os.getenv("GEMINI_API_KEY"))
+# gemini = GeminiConnector(api_key=os.getenv("GEMINI_API_KEY"))
+gemini = GeminiConnector()
+
+# Define the wake word and user voice ID
+wake_word = "Hey Devin"
+user_voice_id = "unique_user_id_here"
+
+# Instantiate the VoiceAssistant with those arguments
+voice_assistant = VoiceAssistant(wake_word, user_voice_id)
+voice_assistant.start()
+
 
 # Initialize system modules
-voice_assistant = VoiceAssistant(wake_word, user_voice_id)
+# voice_assistant = VoiceAssistant(wake_word, user_voice_id)
 gesture_recognizer = GestureRecognizer()
 system_controller = SystemController()
 cpu_monitor = CPUUsageMonitor()
