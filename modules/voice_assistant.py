@@ -10,7 +10,7 @@ from modules.nlp_processing import NLPProcessing
 
 
 class VoiceAssistant:
-    def __init__(self, wake_word="Hey Devin", user_voice_id=None):
+    def __init__(self, wake_word="Hey Devin", user_voice_id=None, chatgpt_api_key=None):
         # Initialize TTS engine
         self.tts_engine = pyttsx3.init()
         self.tts_engine.setProperty('rate', 160)  # Speed of speech
@@ -33,7 +33,10 @@ class VoiceAssistant:
         self.gesture_recognition = GestureRecognition()
 
         # AI Integration
-        self.ai_connector = ChatGPTConnector()
+        if chatgpt_api_key:
+            self.ai_connector = ChatGPTConnector(api_key=chatgpt_api_key)
+        else:
+            raise ValueError("ChatGPT API key is required to initialize VoiceAssistant.")
 
         # System Control
         self.system_control = SystemControl()
@@ -113,5 +116,7 @@ class VoiceAssistant:
 
 
 if __name__ == "__main__":
-    assistant = VoiceAssistant()
+    # Replace with your actual ChatGPT API key
+    chatgpt_api_key = "your_chatgpt_api_key"
+    assistant = VoiceAssistant(chatgpt_api_key=chatgpt_api_key)
     assistant.start()
