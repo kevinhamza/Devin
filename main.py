@@ -49,11 +49,24 @@ def initialize_services():
         logger.info("Initializing database...")
         initialize_database(db_path, data_key)  # Pass db_path and data_key
         
-        # Set up cloud integrations
+        # Set up cloud integrations (assuming cloud modules have proper methods)
         logger.info("Setting up cloud integrations...")
-        AWSIntegration.setup()
-        GCPIntegration.setup()
-        AzureIntegration.setup()
+        
+        # Adjusted integration setup calls
+        if hasattr(AWSIntegration, 'initialize'):
+            AWSIntegration.initialize()  # Assuming 'initialize' method exists
+        else:
+            logger.error("AWSIntegration does not have an 'initialize' method.")
+        
+        if hasattr(GCPIntegration, 'initialize'):
+            GCPIntegration.initialize()  # Assuming 'initialize' method exists
+        else:
+            logger.error("GCPIntegration does not have an 'initialize' method.")
+        
+        if hasattr(AzureIntegration, 'initialize'):
+            AzureIntegration.initialize()  # Assuming 'initialize' method exists
+        else:
+            logger.error("AzureIntegration does not have an 'initialize' method.")
 
         # Initialize monitoring tools
         logger.info("Initializing monitoring tools...")
