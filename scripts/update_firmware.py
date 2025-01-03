@@ -10,11 +10,21 @@ import sys
 import requests
 import logging
 from datetime import datetime
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+firmware_url = os.getenv("FIRMWARE_URL", "")
+if not firmware_url:
+    print("Error: FIRMWARE_URL is not set. Please provide it.")
+    sys.exit(1)
+
 
 # Configure logging
 LOG_FILE = os.path.join(os.getcwd(), 'logs', 'firmware_update.log')
+os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)  # Ensure logs directory exists
 logging.basicConfig(filename=LOG_FILE, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
 
 class FirmwareUpdater:
     def __init__(self, firmware_url, firmware_version, backup_path):
@@ -29,6 +39,7 @@ class FirmwareUpdater:
         self.firmware_version = firmware_version
         self.backup_path = backup_path
         self.download_path = os.path.join(os.getcwd(), 'downloads')
+        self.retries = 3  # Number of retries for network requests
 
     def check_updates(self):
         """
@@ -37,7 +48,7 @@ class FirmwareUpdater:
         """
         logging.info("Checking for firmware updates...")
         try:
-            response = requests.get(f"{self.firmware_url}/latest_version")
+            response = requests.get(f"{self.firmware_url}/latest_version", timeout=10)
             response.raise_for_status()
             latest_version = response.json().get('version', '0.0.0')
             if latest_version > self.firmware_version:
@@ -55,20 +66,25 @@ class FirmwareUpdater:
         :param version: The firmware version to download.
         :return: Path to the downloaded firmware file.
         """
-        try:
-            logging.info(f"Downloading firmware version {version}...")
-            response = requests.get(f"{self.firmware_url}/download/{version}", stream=True)
-            response.raise_for_status()
-            os.makedirs(self.download_path, exist_ok=True)
-            firmware_file = os.path.join(self.download_path, f"firmware_{version}.bin")
-            with open(firmware_file, 'wb') as f:
-                for chunk in response.iter_content(chunk_size=8192):
-                    f.write(chunk)
-            logging.info(f"Firmware downloaded successfully to {firmware_file}")
-            return firmware_file
-        except requests.RequestException as e:
-            logging.error(f"Error downloading firmware: {e}")
-            return None
+        attempts = 0
+        while attempts < self.retries:
+            try:
+                logging.info(f"Downloading firmware version {version}...")
+                response = requests.get(f"{self.firmware_url}/download/{version}", stream=True, timeout=30)
+                response.raise_for_status()
+                os.makedirs(self.download_path, exist_ok=True)
+                firmware_file = os.path.join(self.download_path, f"firmware_{version}.bin")
+                with open(firmware_file, 'wb') as f:
+                    for chunk in response.iter_content(chunk_size=8192):
+                        f.write(chunk)
+                logging.info(f"Firmware downloaded successfully to {firmware_file}")
+                return firmware_file
+            except requests.RequestException as e:
+                attempts += 1
+                logging.error(f"Error downloading firmware (Attempt {attempts}/{self.retries}): {e}")
+                if attempts >= self.retries:
+                    logging.error("Max retries reached for downloading firmware.")
+                    return None
 
     def backup_firmware(self):
         """
@@ -119,3 +135,4 @@ if __name__ == "__main__":
 
     updater = FirmwareUpdater(firmware_url, current_version, backup_path)
     updater.update()
+
