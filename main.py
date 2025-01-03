@@ -28,8 +28,20 @@ def initialize_services():
     """Initialize all required services and dependencies."""
     try:
         # Retrieve arguments from .env file
-        db_path = os.getenv("DB_PATH", "default_db_path.db")
-        data_key = os.getenv("DATA_KEY", "default_data_key")
+        db_path = os.getenv("DB_PATH", "")
+        data_key = os.getenv("DATA_KEY", "")
+
+        # Debug: Check the values of DB_PATH and DATA_KEY
+        logger.debug(f"DB_PATH: {db_path}")
+        logger.debug(f"DATA_KEY: {data_key}")
+
+        if not db_path:
+            logger.error("DB_PATH is not set or is empty in the environment variables.")
+            sys.exit(1)
+        
+        if not data_key:
+            logger.error("DATA_KEY is not set or is empty in the environment variables.")
+            sys.exit(1)
 
         logger.info("Initializing database...")
         initialize_database(db_path, data_key)  # Pass db_path and data_key
