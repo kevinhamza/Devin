@@ -8,6 +8,7 @@ Includes features for handling compute, storage, and AI-related services.
 import boto3
 import os
 import logging
+from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -29,26 +30,36 @@ class AWSIntegration:
         if not all([self.access_key, self.secret_key]):
             raise EnvironmentError("AWS_ACCESS_KEY and AWS_SECRET_KEY must be set as environment variables.")
 
-        # Initialize clients for AWS services
-        self.s3_client = boto3.client(
-            "s3",
-            region_name=self.region,
-            aws_access_key_id=self.access_key,
-            aws_secret_access_key=self.secret_key
-        )
-        self.ec2_client = boto3.client(
-            "ec2",
-            region_name=self.region,
-            aws_access_key_id=self.access_key,
-            aws_secret_access_key=self.secret_key
-        )
-        self.sagemaker_client = boto3.client(
-            "sagemaker",
-            region_name=self.region,
-            aws_access_key_id=self.access_key,
-            aws_secret_access_key=self.secret_key
-        )
-        logger.info("AWS Integration initialized successfully.")
+        try:
+            # Initialize clients for AWS services
+            self.s3_client = boto3.client(
+                "s3",
+                region_name=self.region,
+                aws_access_key_id=self.access_key,
+                aws_secret_access_key=self.secret_key
+            )
+            self.ec2_client = boto3.client(
+                "ec2",
+                region_name=self.region,
+                aws_access_key_id=self.access_key,
+                aws_secret_access_key=self.secret_key
+            )
+            self.sagemaker_client = boto3.client(
+                "sagemaker",
+                region_name=self.region,
+                aws_access_key_id=self.access_key,
+                aws_secret_access_key=self.secret_key
+            )
+            logger.info("AWS Integration initialized successfully.")
+        except NoCredentialsError:
+            logger.error("No AWS credentials found.")
+            raise
+        except PartialCredentialsError:
+            logger.error("Incomplete AWS credentials provided.")
+            raise
+        except Exception as e:
+            logger.error(f"Error initializing AWS clients: {e}")
+            raise
 
     def upload_file_to_s3(self, file_path, bucket_name, object_name=None):
         """
@@ -66,9 +77,13 @@ class AWSIntegration:
             self.s3_client.upload_file(file_path, bucket_name, object_name)
             logger.info(f"File '{file_path}' uploaded to bucket '{bucket_name}' as '{object_name}'.")
             return True
+        except FileNotFoundError:
+            logger.error(f"File not found: {file_path}")
+        except NoCredentialsError:
+            logger.error("AWS credentials not found for S3 operation.")
         except Exception as e:
             logger.error(f"Failed to upload file to S3: {e}")
-            return False
+        return False
 
     def create_ec2_instance(self, image_id, instance_type, key_name, security_group):
         """
@@ -92,9 +107,11 @@ class AWSIntegration:
             instance_id = response["Instances"][0]["InstanceId"]
             logger.info(f"EC2 instance launched with ID: {instance_id}")
             return instance_id
+        except NoCredentialsError:
+            logger.error("AWS credentials not found for EC2 operation.")
         except Exception as e:
             logger.error(f"Failed to launch EC2 instance: {e}")
-            return None
+        return None
 
     def deploy_sagemaker_model(self, model_name, role_arn, primary_container, endpoint_name):
         """
@@ -132,6 +149,8 @@ class AWSIntegration:
             )
             logger.info(f"SageMaker endpoint '{endpoint_name}' created.")
             return endpoint_name
+        except NoCredentialsError:
+            logger.error("AWS credentials not found for SageMaker operation.")
         except Exception as e:
             logger.error(f"Failed to deploy SageMaker model: {e}")
-            return None
+        return None
