@@ -1,26 +1,14 @@
-"""
-voice_recognition.py
----------------------
-This module handles the recognition of voice commands, leveraging advanced speech-to-text models for accuracy.
-
-Dependencies:
-- vosk (Speech-to-text recognition)
-- sounddevice (Audio recording)
-- numpy (Audio processing)
-- logging (Log operations)
-"""
-
 import sounddevice as sd
 import vosk
 import numpy as np
 import json
 import os
 import logging
-
+from speaker_verification import verify_speaker_identity  # Placeholder for actual speaker verification logic
 
 class VoiceRecognition:
     """
-    A class to handle voice command recognition.
+    A class to handle voice command recognition with speaker verification and wake word detection.
     """
 
     def __init__(self, model_path="models/vosk_model", sample_rate=16000, log_file="voice_recognition.log"):
@@ -109,23 +97,34 @@ class VoiceRecognition:
     def listen_and_process(self):
         """
         Continuously listens for voice commands and processes them.
-
+        After detecting the wake word, it verifies the speaker before processing further.
+        
         Returns:
-            str: Recognized command text.
+            str: Recognized command text or an empty string if no valid command.
         """
         print("Listening for commands. Speak now.")
         try:
             recognized_text = self.recognize_voice()
-            if recognized_text:
-                logging.info(f"Command received: {recognized_text}")
-                print(f"You said: {recognized_text}")
+
+            # Check if the wake word is detected
+            if "hey devin" in recognized_text.lower():
+                print("Wake word detected. Verifying speaker...")
+                # Verify if the speaker is authorized (matches your voice)
+                if verify_speaker_identity(self.record_audio()):
+                    logging.info("Speaker verified. Processing command.")
+                    return recognized_text
+                else:
+                    logging.info("Unauthorized speaker detected.")
+                    return ""  # Ignore the command if speaker is not authorized
             else:
-                print("No command recognized.")
-            return recognized_text
+                print("No wake word detected.")
+                return ""  # Ignore if wake word is not detected
+                
         except Exception as e:
             logging.error(f"Error during listen and process: {e}")
             print("An error occurred. Please try again.")
             return ""
+
 
 if __name__ == "__main__":
     # Example usage
