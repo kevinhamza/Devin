@@ -12,9 +12,13 @@ from cloud.azure_integration import AzureIntegration
 from monitoring.cpu_usage import CPUUsage
 from monitoring.analytics_dashboard import AnalyticsDashboard
 from scripts.initialize_db import initialize_database
-from scripts.update_firmware import update_firmware
+from scripts.update_firmware import FirmwareUpdater
 from security.threat_modeling import ThreatModeling
 from modules.nlp_conversation import NLPConversation
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Initialize logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -23,27 +27,31 @@ logger = logging.getLogger(__name__)
 def initialize_services():
     """Initialize all required services and dependencies."""
     try:
+        # Retrieve arguments from .env file
+        db_path = os.getenv("DB_PATH", "default_db_path.db")
+        data_key = os.getenv("DATA_KEY", "default_data_key")
+
         logger.info("Initializing database...")
-        initialize_database()
+        initialize_database(db_path, data_key)  # Pass db_path and data_key
         
         logger.info("Updating firmware...")
         update_firmware()
-        
+
         logger.info("Setting up cloud integrations...")
         AWSIntegration.setup()
         GCPIntegration.setup()
         AzureIntegration.setup()
-        
+
         logger.info("Initializing monitoring tools...")
         CPUUsage.start_monitoring()
         AnalyticsDashboard.initialize()
-        
+
         logger.info("Loading AI learning module...")
         AILearning.load_models()
-        
+
         logger.info("Initializing system control module...")
         SystemControl.initialize()
-        
+
         logger.info("System initialization complete.")
     except Exception as e:
         logger.error(f"Error during initialization: {e}")
