@@ -54,25 +54,31 @@ def initialize_services():
             logger.error("Firmware configuration (URL, version, or backup path) is missing in the environment variables.")
             sys.exit(1)
 
+        # Initialize the database
         logger.info("Initializing database...")
         initialize_database(db_path, data_key)  # Pass db_path and data_key
         
+        # Firmware update process
         logger.info("Updating firmware...")
         firmware_updater = FirmwareUpdater(firmware_url, firmware_version, backup_path)
         firmware_updater.update()  # Call the firmware update method
         
+        # Set up cloud integrations
         logger.info("Setting up cloud integrations...")
         AWSIntegration.setup()
         GCPIntegration.setup()
         AzureIntegration.setup()
 
+        # Initialize monitoring tools
         logger.info("Initializing monitoring tools...")
         CPUUsage.start_monitoring()
         AnalyticsDashboard.initialize()
 
+        # Load AI learning models
         logger.info("Loading AI learning module...")
         AILearning.load_models()
 
+        # Initialize system control module
         logger.info("Initializing system control module...")
         SystemControl.initialize()
 
