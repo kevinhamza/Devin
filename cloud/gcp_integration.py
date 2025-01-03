@@ -5,7 +5,7 @@ Google Cloud Platform (GCP) Integration Module
 
 This module provides comprehensive integration with Google Cloud Platform (GCP),
 allowing the project to interact seamlessly with various GCP services such as Compute Engine,
-Cloud Storage, BigQuery, Pub/Sub, and more. 
+Cloud Storage, BigQuery, Pub/Sub, and more.
 
 The functionalities include service management, authentication, resource provisioning,
 and usage monitoring.
@@ -20,6 +20,10 @@ Dependencies:
 from google.cloud import storage, bigquery, pubsub_v1
 import google.auth
 import os
+import logging
+
+# Set up logging for better debugging and tracking
+logging.basicConfig(level=logging.INFO)
 
 class GCPIntegration:
     def __init__(self, project_id=None, credentials_file=None):
@@ -32,40 +36,65 @@ class GCPIntegration:
         """
         self.project_id = project_id or os.getenv("GCP_PROJECT_ID")
         self.credentials_file = credentials_file or os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-        self.credentials, self.default_project = google.auth.default()
+        
+        # Attempt to load default credentials if available
+        try:
+            self.credentials, self.default_project = google.auth.default()
+        except google.auth.exceptions.DefaultCredentialsError:
+            logging.error("No valid credentials found. Please set up GCP authentication.")
+            raise
 
+        # If a credentials file is provided, use it for authentication
         if self.credentials_file:
             os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = self.credentials_file
+            logging.info(f"Using credentials from: {self.credentials_file}")
 
     def initialize_storage_client(self):
         """
         Initialize the Google Cloud Storage client.
-        
+
         Returns:
             google.cloud.storage.Client: The storage client.
         """
-        return storage.Client(project=self.project_id, credentials=self.credentials)
+        try:
+            storage_client = storage.Client(project=self.project_id, credentials=self.credentials)
+            logging.info("Google Cloud Storage client initialized.")
+            return storage_client
+        except Exception as e:
+            logging.error(f"Failed to initialize Google Cloud Storage client: {e}")
+            raise
 
     def initialize_bigquery_client(self):
         """
         Initialize the BigQuery client.
-        
+
         Returns:
             google.cloud.bigquery.Client: The BigQuery client.
         """
-        return bigquery.Client(project=self.project_id, credentials=self.credentials)
+        try:
+            bigquery_client = bigquery.Client(project=self.project_id, credentials=self.credentials)
+            logging.info("Google BigQuery client initialized.")
+            return bigquery_client
+        except Exception as e:
+            logging.error(f"Failed to initialize Google BigQuery client: {e}")
+            raise
 
     def initialize_pubsub_client(self):
         """
         Initialize the Pub/Sub client.
-        
+
         Returns:
             google.cloud.pubsub_v1.PublisherClient: The Pub/Sub publisher client.
             google.cloud.pubsub_v1.SubscriberClient: The Pub/Sub subscriber client.
         """
-        publisher = pubsub_v1.PublisherClient(credentials=self.credentials)
-        subscriber = pubsub_v1.SubscriberClient(credentials=self.credentials)
-        return publisher, subscriber
+        try:
+            publisher = pubsub_v1.PublisherClient(credentials=self.credentials)
+            subscriber = pubsub_v1.SubscriberClient(credentials=self.credentials)
+            logging.info("Google Pub/Sub client initialized.")
+            return publisher, subscriber
+        except Exception as e:
+            logging.error(f"Failed to initialize Google Pub/Sub client: {e}")
+            raise
 
     def upload_file_to_bucket(self, bucket_name, source_file_path, destination_blob_name):
         """
@@ -79,11 +108,16 @@ class GCPIntegration:
         Returns:
             google.cloud.storage.blob.Blob: The uploaded blob object.
         """
-        storage_client = self.initialize_storage_client()
-        bucket = storage_client.bucket(bucket_name)
-        blob = bucket.blob(destination_blob_name)
-        blob.upload_from_filename(source_file_path)
-        return blob
+        try:
+            storage_client = self.initialize_storage_client()
+            bucket = storage_client.bucket(bucket_name)
+            blob = bucket.blob(destination_blob_name)
+            blob.upload_from_filename(source_file_path)
+            logging.info(f"File {source_file_path} uploaded to {bucket_name}/{destination_blob_name}.")
+            return blob
+        except Exception as e:
+            logging.error(f"Failed to upload file to bucket: {e}")
+            raise
 
     def query_bigquery(self, query):
         """
@@ -95,9 +129,14 @@ class GCPIntegration:
         Returns:
             google.cloud.bigquery.table.RowIterator: Query results.
         """
-        bigquery_client = self.initialize_bigquery_client()
-        query_job = bigquery_client.query(query)
-        return query_job.result()
+        try:
+            bigquery_client = self.initialize_bigquery_client()
+            query_job = bigquery_client.query(query)
+            logging.info("BigQuery query executed successfully.")
+            return query_job.result()
+        except Exception as e:
+            logging.error(f"Failed to execute BigQuery query: {e}")
+            raise
 
     def publish_message(self, topic_name, message):
         """
@@ -110,10 +149,16 @@ class GCPIntegration:
         Returns:
             str: Message ID of the published message.
         """
-        publisher, _ = self.initialize_pubsub_client()
-        topic_path = publisher.topic_path(self.project_id, topic_name)
-        future = publisher.publish(topic_path, message.encode("utf-8"))
-        return future.result()
+        try:
+            publisher, _ = self.initialize_pubsub_client()
+            topic_path = publisher.topic_path(self.project_id, topic_name)
+            future = publisher.publish(topic_path, message.encode("utf-8"))
+            message_id = future.result()
+            logging.info(f"Message published to topic {topic_name} with ID: {message_id}")
+            return message_id
+        except Exception as e:
+            logging.error(f"Failed to publish message: {e}")
+            raise
 
     def subscribe_to_topic(self, subscription_name, callback):
         """
@@ -123,21 +168,31 @@ class GCPIntegration:
             subscription_name (str): Name of the subscription.
             callback (function): Callback function to handle incoming messages.
         """
-        _, subscriber = self.initialize_pubsub_client()
-        subscription_path = subscriber.subscription_path(self.project_id, subscription_name)
-        subscriber.subscribe(subscription_path, callback=callback)
+        try:
+            _, subscriber = self.initialize_pubsub_client()
+            subscription_path = subscriber.subscription_path(self.project_id, subscription_name)
+            subscriber.subscribe(subscription_path, callback=callback)
+            logging.info(f"Subscribed to Pub/Sub topic {subscription_name}.")
+        except Exception as e:
+            logging.error(f"Failed to subscribe to topic: {e}")
+            raise
 
 # Example Usage:
 if __name__ == "__main__":
-    gcp = GCPIntegration(project_id="your_project_id", credentials_file="path/to/credentials.json")
-    # Example of uploading a file to a bucket:
-    # gcp.upload_file_to_bucket("your_bucket_name", "local_file.txt", "remote_file.txt")
+    try:
+        gcp = GCPIntegration(project_id="your_project_id", credentials_file="path/to/credentials.json")
 
-    # Example of running a query in BigQuery:
-    # results = gcp.query_bigquery("SELECT * FROM your_dataset.your_table LIMIT 10")
-    # for row in results:
-    #     print(row)
+        # Example of uploading a file to a bucket:
+        # gcp.upload_file_to_bucket("your_bucket_name", "local_file.txt", "remote_file.txt")
 
-    # Example of publishing a message to Pub/Sub:
-    # message_id = gcp.publish_message("your_topic_name", "Hello, World!")
-    # print("Message published with ID:", message_id)
+        # Example of running a query in BigQuery:
+        # results = gcp.query_bigquery("SELECT * FROM your_dataset.your_table LIMIT 10")
+        # for row in results:
+        #     print(row)
+
+        # Example of publishing a message to Pub/Sub:
+        # message_id = gcp.publish_message("your_topic_name", "Hello, World!")
+        # print("Message published with ID:", message_id)
+
+    except Exception as e:
+        logging.error(f"Error occurred: {e}")
