@@ -23,7 +23,8 @@ import os
 import logging
 
 # Set up logging for better debugging and tracking
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger("GCPIntegration")
 
 class GCPIntegration:
     def __init__(self, project_id=None, credentials_file=None):
@@ -41,13 +42,13 @@ class GCPIntegration:
         try:
             self.credentials, self.default_project = google.auth.default()
         except google.auth.exceptions.DefaultCredentialsError:
-            logging.error("No valid credentials found. Please set up GCP authentication.")
+            logger.error("No valid credentials found. Please set up GCP authentication.")
             raise
 
         # If a credentials file is provided, use it for authentication
         if self.credentials_file:
             os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = self.credentials_file
-            logging.info(f"Using credentials from: {self.credentials_file}")
+            logger.info(f"Using credentials from: {self.credentials_file}")
 
     def initialize_storage_client(self):
         """
@@ -58,10 +59,10 @@ class GCPIntegration:
         """
         try:
             storage_client = storage.Client(project=self.project_id, credentials=self.credentials)
-            logging.info("Google Cloud Storage client initialized.")
+            logger.info("Google Cloud Storage client initialized.")
             return storage_client
         except Exception as e:
-            logging.error(f"Failed to initialize Google Cloud Storage client: {e}")
+            logger.error(f"Failed to initialize Google Cloud Storage client: {e}")
             raise
 
     def initialize_bigquery_client(self):
@@ -73,10 +74,10 @@ class GCPIntegration:
         """
         try:
             bigquery_client = bigquery.Client(project=self.project_id, credentials=self.credentials)
-            logging.info("Google BigQuery client initialized.")
+            logger.info("Google BigQuery client initialized.")
             return bigquery_client
         except Exception as e:
-            logging.error(f"Failed to initialize Google BigQuery client: {e}")
+            logger.error(f"Failed to initialize Google BigQuery client: {e}")
             raise
 
     def initialize_pubsub_client(self):
@@ -90,10 +91,10 @@ class GCPIntegration:
         try:
             publisher = pubsub_v1.PublisherClient(credentials=self.credentials)
             subscriber = pubsub_v1.SubscriberClient(credentials=self.credentials)
-            logging.info("Google Pub/Sub client initialized.")
+            logger.info("Google Pub/Sub client initialized.")
             return publisher, subscriber
         except Exception as e:
-            logging.error(f"Failed to initialize Google Pub/Sub client: {e}")
+            logger.error(f"Failed to initialize Google Pub/Sub client: {e}")
             raise
 
     def upload_file_to_bucket(self, bucket_name, source_file_path, destination_blob_name):
@@ -113,10 +114,10 @@ class GCPIntegration:
             bucket = storage_client.bucket(bucket_name)
             blob = bucket.blob(destination_blob_name)
             blob.upload_from_filename(source_file_path)
-            logging.info(f"File {source_file_path} uploaded to {bucket_name}/{destination_blob_name}.")
+            logger.info(f"File {source_file_path} uploaded to {bucket_name}/{destination_blob_name}.")
             return blob
         except Exception as e:
-            logging.error(f"Failed to upload file to bucket: {e}")
+            logger.error(f"Failed to upload file to bucket: {e}")
             raise
 
     def query_bigquery(self, query):
@@ -132,10 +133,10 @@ class GCPIntegration:
         try:
             bigquery_client = self.initialize_bigquery_client()
             query_job = bigquery_client.query(query)
-            logging.info("BigQuery query executed successfully.")
+            logger.info("BigQuery query executed successfully.")
             return query_job.result()
         except Exception as e:
-            logging.error(f"Failed to execute BigQuery query: {e}")
+            logger.error(f"Failed to execute BigQuery query: {e}")
             raise
 
     def publish_message(self, topic_name, message):
@@ -154,10 +155,10 @@ class GCPIntegration:
             topic_path = publisher.topic_path(self.project_id, topic_name)
             future = publisher.publish(topic_path, message.encode("utf-8"))
             message_id = future.result()
-            logging.info(f"Message published to topic {topic_name} with ID: {message_id}")
+            logger.info(f"Message published to topic {topic_name} with ID: {message_id}")
             return message_id
         except Exception as e:
-            logging.error(f"Failed to publish message: {e}")
+            logger.error(f"Failed to publish message: {e}")
             raise
 
     def subscribe_to_topic(self, subscription_name, callback):
@@ -172,9 +173,9 @@ class GCPIntegration:
             _, subscriber = self.initialize_pubsub_client()
             subscription_path = subscriber.subscription_path(self.project_id, subscription_name)
             subscriber.subscribe(subscription_path, callback=callback)
-            logging.info(f"Subscribed to Pub/Sub topic {subscription_name}.")
+            logger.info(f"Subscribed to Pub/Sub topic {subscription_name}.")
         except Exception as e:
-            logging.error(f"Failed to subscribe to topic: {e}")
+            logger.error(f"Failed to subscribe to topic: {e}")
             raise
 
 # Example Usage:
@@ -195,4 +196,4 @@ if __name__ == "__main__":
         # print("Message published with ID:", message_id)
 
     except Exception as e:
-        logging.error(f"Error occurred: {e}")
+        logger.error(f"Error occurred: {e}")
