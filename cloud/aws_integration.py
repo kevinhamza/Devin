@@ -29,6 +29,7 @@ class AWSIntegration:
         if not all([self.access_key, self.secret_key]):
             raise EnvironmentError("AWS_ACCESS_KEY and AWS_SECRET_KEY must be set as environment variables.")
 
+        # Initialize clients for AWS services
         self.s3_client = boto3.client(
             "s3",
             region_name=self.region,
@@ -47,7 +48,7 @@ class AWSIntegration:
             aws_access_key_id=self.access_key,
             aws_secret_access_key=self.secret_key
         )
-        logger.info("AWS Integration initialized.")
+        logger.info("AWS Integration initialized successfully.")
 
     def upload_file_to_s3(self, file_path, bucket_name, object_name=None):
         """
@@ -60,7 +61,7 @@ class AWSIntegration:
         """
         if object_name is None:
             object_name = os.path.basename(file_path)
-        
+
         try:
             self.s3_client.upload_file(file_path, bucket_name, object_name)
             logger.info(f"File '{file_path}' uploaded to bucket '{bucket_name}' as '{object_name}'.")
@@ -106,7 +107,7 @@ class AWSIntegration:
         :return: Endpoint name if successful, None otherwise.
         """
         try:
-            # Create the model
+            # Create the model in SageMaker
             self.sagemaker_client.create_model(
                 ModelName=model_name,
                 PrimaryContainer=primary_container,
@@ -114,18 +115,17 @@ class AWSIntegration:
             )
             logger.info(f"SageMaker model '{model_name}' created.")
 
-            # Create the endpoint
+            # Create the SageMaker endpoint configuration
             self.sagemaker_client.create_endpoint_config(
                 EndpointConfigName=f"{endpoint_name}-config",
-                ProductionVariants=[
-                    {
-                        "VariantName": "AllTraffic",
-                        "ModelName": model_name,
-                        "InstanceType": "ml.t2.medium",
-                        "InitialInstanceCount": 1
-                    }
-                ]
+                ProductionVariants=[{
+                    "VariantName": "AllTraffic",
+                    "ModelName": model_name,
+                    "InstanceType": "ml.t2.medium",
+                    "InitialInstanceCount": 1
+                }]
             )
+            # Deploy the endpoint
             self.sagemaker_client.create_endpoint(
                 EndpointName=endpoint_name,
                 EndpointConfigName=f"{endpoint_name}-config"
