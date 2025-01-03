@@ -49,20 +49,29 @@ def initialize_services():
         logger.info("Setting up cloud integrations...")
         
         # Adjusted integration setup calls with individual error handling
-        if hasattr(AWSIntegration, 'initialize'):
-            AWSIntegration.initialize()
-        else:
-            logger.error("AWSIntegration does not have an 'initialize' method.")
-        
-        if hasattr(GCPIntegration, 'initialize'):
-            GCPIntegration.initialize()
-        else:
-            logger.error("GCPIntegration does not have an 'initialize' method.")
-        
-        if hasattr(AzureIntegration, 'initialize'):
-            AzureIntegration.initialize()
-        else:
-            logger.error("AzureIntegration does not have an 'initialize' method.")
+        try:
+            if hasattr(AWSIntegration, 'initialize'):
+                AWSIntegration.initialize()
+            else:
+                logger.error("AWSIntegration does not have an 'initialize' method.")
+        except Exception as e:
+            logger.error(f"Error initializing AWSIntegration: {e}")
+
+        try:
+            if hasattr(GCPIntegration, 'initialize'):
+                GCPIntegration.initialize()
+            else:
+                logger.error("GCPIntegration does not have an 'initialize' method.")
+        except Exception as e:
+            logger.error(f"Error initializing GCPIntegration: {e}")
+
+        try:
+            if hasattr(AzureIntegration, 'initialize'):
+                AzureIntegration.initialize()
+            else:
+                logger.error("AzureIntegration does not have an 'initialize' method.")
+        except Exception as e:
+            logger.error(f"Error initializing AzureIntegration: {e}")
 
         # Initialize monitoring tools with error handling for each tool
         logger.info("Initializing monitoring tools...")
