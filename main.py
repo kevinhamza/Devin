@@ -30,11 +30,18 @@ def initialize_services():
         # Retrieve arguments from .env file
         db_path = os.getenv("DB_PATH", "")
         data_key = os.getenv("DATA_KEY", "")
+        firmware_url = os.getenv("FIRMWARE_URL", "")
+        firmware_version = os.getenv("FIRMWARE_VERSION", "")
+        backup_path = os.getenv("BACKUP_PATH", "")
 
-        # Debug: Check the values of DB_PATH and DATA_KEY
+        # Debug: Check the values of the environment variables
         logger.debug(f"DB_PATH: {db_path}")
         logger.debug(f"DATA_KEY: {data_key}")
+        logger.debug(f"FIRMWARE_URL: {firmware_url}")
+        logger.debug(f"FIRMWARE_VERSION: {firmware_version}")
+        logger.debug(f"BACKUP_PATH: {backup_path}")
 
+        # Check if any required variables are missing
         if not db_path:
             logger.error("DB_PATH is not set or is empty in the environment variables.")
             sys.exit(1)
@@ -43,12 +50,17 @@ def initialize_services():
             logger.error("DATA_KEY is not set or is empty in the environment variables.")
             sys.exit(1)
 
+        if not firmware_url or not firmware_version or not backup_path:
+            logger.error("Firmware configuration (URL, version, or backup path) is missing in the environment variables.")
+            sys.exit(1)
+
         logger.info("Initializing database...")
         initialize_database(db_path, data_key)  # Pass db_path and data_key
         
         logger.info("Updating firmware...")
-        update_firmware()
-
+        firmware_updater = FirmwareUpdater(firmware_url, firmware_version, backup_path)
+        firmware_updater.update()  # Call the firmware update method
+        
         logger.info("Setting up cloud integrations...")
         AWSIntegration.setup()
         GCPIntegration.setup()
