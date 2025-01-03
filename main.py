@@ -37,51 +37,61 @@ def initialize_services():
         logger.debug(f"BACKUP_PATH: {backup_path}")
 
         # Check if any required variables are missing
-        if not db_path:
-            logger.error("DB_PATH is not set or is empty in the environment variables.")
-            sys.exit(1)
-        
-        if not data_key:
-            logger.error("DATA_KEY is not set or is empty in the environment variables.")
+        if not db_path or not data_key:
+            logger.error("Required environment variables (DB_PATH, DATA_KEY) are not set.")
             sys.exit(1)
 
         # Initialize the database
         logger.info("Initializing database...")
         initialize_database(db_path, data_key)  # Pass db_path and data_key
-        
-        # Set up cloud integrations (assuming cloud modules have proper methods)
+
+        # Set up cloud integrations
         logger.info("Setting up cloud integrations...")
         
-        # Adjusted integration setup calls
+        # Adjusted integration setup calls with individual error handling
         if hasattr(AWSIntegration, 'initialize'):
-            AWSIntegration.initialize()  # Assuming 'initialize' method exists
+            AWSIntegration.initialize()
         else:
             logger.error("AWSIntegration does not have an 'initialize' method.")
         
         if hasattr(GCPIntegration, 'initialize'):
-            GCPIntegration.initialize()  # Assuming 'initialize' method exists
+            GCPIntegration.initialize()
         else:
             logger.error("GCPIntegration does not have an 'initialize' method.")
         
         if hasattr(AzureIntegration, 'initialize'):
-            AzureIntegration.initialize()  # Assuming 'initialize' method exists
+            AzureIntegration.initialize()
         else:
             logger.error("AzureIntegration does not have an 'initialize' method.")
 
-        # Initialize monitoring tools
+        # Initialize monitoring tools with error handling for each tool
         logger.info("Initializing monitoring tools...")
-        CPUUsage.start_monitoring()
-        AnalyticsDashboard.initialize()
+        try:
+            CPUUsage.start_monitoring()
+        except Exception as e:
+            logger.error(f"Failed to start CPU usage monitoring: {e}")
+
+        try:
+            AnalyticsDashboard.initialize()
+        except Exception as e:
+            logger.error(f"Failed to initialize Analytics Dashboard: {e}")
 
         # Load AI learning models
         logger.info("Loading AI learning module...")
-        AILearning.load_models()
+        try:
+            AILearning.load_models()
+        except Exception as e:
+            logger.error(f"Failed to load AI learning models: {e}")
 
         # Initialize system control module
         logger.info("Initializing system control module...")
-        SystemControl.initialize()
+        try:
+            SystemControl.initialize()
+        except Exception as e:
+            logger.error(f"Failed to initialize system control module: {e}")
 
         logger.info("System initialization complete.")
+    
     except Exception as e:
         logger.error(f"Error during initialization: {e}")
         sys.exit(1)
@@ -99,8 +109,8 @@ def main():
     nlp_conversation = NLPConversation()
 
     # Main event loop
-    while True:
-        try:
+    try:
+        while True:
             logger.info("Listening for user input...")
 
             # Voice assistant activation
@@ -121,11 +131,12 @@ def main():
                 logger.info("Gesture recognized. Executing corresponding action.")
                 gesture_recognition.execute_action()
 
-        except KeyboardInterrupt:
-            logger.info("Keyboard interrupt detected. Exiting Devin AI assistant.")
-            break
-        except Exception as e:
-            logger.error(f"Error in main loop: {e}")
+    except KeyboardInterrupt:
+        logger.info("Keyboard interrupt detected. Exiting Devin AI assistant.")
+    except Exception as e:
+        logger.error(f"Error in main loop: {e}")
+    finally:
+        logger.info("Devin AI assistant shut down cleanly.")
 
 if __name__ == "__main__":
     main()
