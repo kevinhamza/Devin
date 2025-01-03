@@ -138,4 +138,17 @@ def main():
             print("An unexpected error occurred.")
 
 if __name__ == "__main__":
-    main()
+    # Initialize the ChatGPT connector with the correct API key
+    api_key = os.getenv("CHATGPT_API_KEY", "your_api_key_here")
+    chat_gpt_connector = ChatGPTConnector(api_key)
+
+    # Command received
+    command = "hi"
+    
+    # Process command with execute_task
+    response = chat_gpt_connector.execute_task(command)
+
+    if response:
+        print("ChatGPT Response:", response)
+    else:
+        print("Error: Could not get a valid response.")
