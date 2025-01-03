@@ -1,152 +1,94 @@
-import sys
 import os
-import time
-import threading
-from dotenv import load_dotenv
-from pynput.mouse import Controller as MouseController
-from pynput.keyboard import Controller as KeyboardController
+import sys
+import logging
 from modules.voice_assistant import VoiceAssistant
-from modules.gesture_recognition import GestureRecognition
 from modules.system_control import SystemControl
-from modules.ai_connector import AIConnector
-from ai_integrations.chatgpt_connector import ChatGPTConnector
-from ai_integrations.gemini_connector import GeminiConnector
+from modules.gesture_recognition import GestureRecognition
+from modules.ai_tools.ai_learning import AILearning
+from operate.analytics import Analytics
 from cloud.aws_integration import AWSIntegration
-from monitoring.cpu_usage import get_cpu_usage
-from monitoring.analytics_dashboard import collect_system_metrics
-from utils.logger import setup_logger
+from cloud.gcp_integration import GCPIntegration
+from cloud.azure_integration import AzureIntegration
+from monitoring.cpu_usage import CPUUsage
+from monitoring.analytics_dashboard import AnalyticsDashboard
+from scripts.initialize_db import initialize_database
+from scripts.update_firmware import update_firmware
+from security.threat_modeling import ThreatModeling
+from modules.nlp_conversation import NLPConversation
 
-# Load environment variables
-load_dotenv()
+# Initialize logging
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
-# Print the values for debugging (ensure sensitive information is not exposed in production)
-aws_access_key = os.getenv('AWS_ACCESS_KEY')
-aws_secret_key = os.getenv('AWS_SECRET_KEY')
-
-if not aws_access_key or not aws_secret_key:
-    raise EnvironmentError("AWS_ACCESS_KEY and AWS_SECRET_KEY must be set in .env file.")
-
-# Validate API keys for AI integrations
-chatgpt_api_key = os.getenv("CHATGPT_API_KEY")
-if not chatgpt_api_key:
-    raise ValueError("API key for ChatGPT is not configured. Please set it in the .env file.")
-
-gemini_api_key = os.getenv("GEMINI_API_KEY")  # Optional, handle if available
-gemini = GeminiConnector()
-
-# Initialize logger
-logger = setup_logger("Devin")
-
-# Mouse and keyboard controllers
-mouse = MouseController()
-keyboard = KeyboardController()
-
-# Global assistant configuration
-assistant_name = "Devin"
-wake_word = f"Hey {assistant_name}"
-user_voice_id = "unique_user_id_here"  # Replace with the actual user voice ID
-
-# Initialize AI modules
-chatgpt = ChatGPTConnector(api_key=chatgpt_api_key)
-
-# Initialize system modules
-voice_assistant = VoiceAssistant(wake_word, user_voice_id, api_key=chatgpt_api_key)
-gesture_recognizer = GestureRecognition()
-system_controller = SystemControl()
-cpu_monitor = get_cpu_usage
-analytics_dashboard = collect_system_metrics
-
-# Cloud integrations
-aws_integration = AWSIntegration()
-
-# Define tasks
-def handle_voice_command(command):
-    """
-    Process voice commands and execute corresponding tasks.
-    """
+def initialize_services():
+    """Initialize all required services and dependencies."""
     try:
-        logger.info(f"Received voice command: {command}")
-        if "open browser" in command:
-            system_controller.open_application("browser")
-        elif "shutdown system" in command:
-            system_controller.shutdown()
-        elif "control mouse" in command:
-            control_mouse_with_gesture()
-        else:
-            response = chatgpt.get_response(command)
-            logger.info(f"ChatGPT response: {response}")
-            voice_assistant.speak(response)
+        logger.info("Initializing database...")
+        initialize_database()
+        
+        logger.info("Updating firmware...")
+        update_firmware()
+        
+        logger.info("Setting up cloud integrations...")
+        AWSIntegration.setup()
+        GCPIntegration.setup()
+        AzureIntegration.setup()
+        
+        logger.info("Initializing monitoring tools...")
+        CPUUsage.start_monitoring()
+        AnalyticsDashboard.initialize()
+        
+        logger.info("Loading AI learning module...")
+        AILearning.load_models()
+        
+        logger.info("Initializing system control module...")
+        SystemControl.initialize()
+        
+        logger.info("System initialization complete.")
     except Exception as e:
-        logger.error(f"Error handling voice command: {e}")
-        voice_assistant.speak("Sorry, I encountered an error processing your command.")
+        logger.error(f"Error during initialization: {e}")
+        sys.exit(1)
 
-def control_mouse_with_gesture():
-    """
-    Enable gesture-based mouse control.
-    """
-    logger.info("Activating gesture-based mouse control...")
-    voice_assistant.speak("Gesture-based mouse control activated. Use hand gestures to control the pointer.")
-    gesture_recognizer.start_recognition(mouse)
-
-def monitor_resources():
-    """
-    Monitor system resources and provide insights.
-    """
-    while True:
-        try:
-            cpu_usage = cpu_monitor()
-            logger.info(f"CPU usage: {cpu_usage}%")
-            if cpu_usage > 90:
-                voice_assistant.speak("Warning: CPU usage is critically high!")
-            time.sleep(10)
-        except Exception as e:
-            logger.error(f"Error monitoring resources: {e}")
-            time.sleep(10)  # Ensure we don't break the loop on error
-
-def perform_cloud_tasks():
-    """
-    Handle cloud-related tasks.
-    """
-    try:
-        logger.info("Performing cloud operations...")
-        aws_integration.sync_files()
-    except Exception as e:
-        logger.error(f"Cloud operation error: {e}")
-
-def keyboard_typing_simulation(text):
-    """
-    Simulate keyboard typing for automation tasks.
-    """
-    logger.info(f"Typing text: {text}")
-    for char in text:
-        keyboard.type(char)
-        time.sleep(0.1)
-
-# Main loop
 def main():
-    logger.info(f"Starting {assistant_name}...")
-    voice_assistant.speak(f"Hello! {assistant_name} is ready.")
-    
-    # Start monitoring in a separate thread
-    threading.Thread(target=monitor_resources, daemon=True).start()
-    
-    # Start cloud task thread (if needed)
-    threading.Thread(target=perform_cloud_tasks, daemon=True).start()
+    """Main function to run Devin's AI assistant."""
+    logger.info("Starting Devin AI assistant...")
 
-    # Listen for commands
+    # Initialize services
+    initialize_services()
+
+    # Load modules
+    voice_assistant = VoiceAssistant()
+    gesture_recognition = GestureRecognition()
+    nlp_conversation = NLPConversation()
+
+    # Main event loop
     while True:
         try:
-            command = voice_assistant.listen()
-            if wake_word.lower() in command.lower():
-                command = command.replace(wake_word, "").strip()
-                handle_voice_command(command)
+            logger.info("Listening for user input...")
+
+            # Voice assistant activation
+            if voice_assistant.detect_wake_word():
+                command = voice_assistant.listen_and_transcribe()
+                logger.debug(f"User command: {command}")
+
+                if "exit" in command.lower():
+                    logger.info("Exiting Devin AI assistant.")
+                    break
+
+                response = nlp_conversation.process_command(command)
+                logger.debug(f"Response: {response}")
+                voice_assistant.speak(response)
+
+            # Gesture recognition activation
+            if gesture_recognition.detect_gesture():
+                logger.info("Gesture recognized. Executing corresponding action.")
+                gesture_recognition.execute_action()
+
         except KeyboardInterrupt:
-            logger.info("Shutting down Devin...")
-            voice_assistant.speak("Goodbye!")
-            sys.exit(0)
+            logger.info("Keyboard interrupt detected. Exiting Devin AI assistant.")
+            break
         except Exception as e:
             logger.error(f"Error in main loop: {e}")
-            voice_assistant.speak("An unexpected error occurred.")
 
 if __name__ == "__main__":
     main()
