@@ -4,9 +4,9 @@ import numpy as np
 import json
 import os
 import logging
-from speaker_verification import verify_speaker_identity  # Placeholder for actual speaker verification logic
+from .speaker_verification import verify_speaker
 
-class VoiceRecognition:
+class recognize_command:
     """
     A class to handle voice command recognition with speaker verification and wake word detection.
     """
