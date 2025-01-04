@@ -26,7 +26,7 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-class CPUUsage:
+class monitor_cpu:
     def __init__(self, log_file=LOG_FILE, alert_threshold=CPU_ALERT_THRESHOLD):
         self.log_file = log_file
         self.alert_threshold = alert_threshold
