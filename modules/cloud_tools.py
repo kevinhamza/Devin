@@ -16,7 +16,7 @@ import json
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-class CloudTools:
+class manage_cloud_resources:
     def __init__(self):
         self.aws_clients = {}
         self.gcp_clients = {}
