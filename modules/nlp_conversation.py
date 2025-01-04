@@ -21,7 +21,7 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-class NLPConversation:
+class start_conversation:
     def __init__(self, model="gpt-3.5-turbo"):
         """
         Initialize the NLPConversation class.
