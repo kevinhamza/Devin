@@ -97,6 +97,8 @@ charset-normalizer==3.3.2
 chroma-hnswlib==0.7.3
 chromadb==0.4.23
 click==8.1.7
+libros
+vosk
 colorama==0.4.6
 coloredlogs==15.0.1
 contextlib2==21.6.0
