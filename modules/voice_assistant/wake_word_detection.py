@@ -16,7 +16,7 @@ import os
 import logging
 from threading import Thread
 
-class WakeWordDetector:
+class detect_wake_word:
     """
     Detects the wake word 'Hey Devin' using Porcupine library.
     """
