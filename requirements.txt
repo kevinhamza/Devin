@@ -65,6 +65,7 @@ scikit-learn
 azure-mgmt-network
 azure-identity
 numpy
+googletrans
 azure-mgmt-compute
 google-cloud-pubsub
 azure-mgmt-storage
