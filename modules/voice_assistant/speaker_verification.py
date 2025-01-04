@@ -20,7 +20,7 @@ import os
 import logging
 import tempfile
 
-class SpeakerVerification:
+class verify_speaker:
     """
     A class to handle speaker verification based on voice embeddings.
     """
