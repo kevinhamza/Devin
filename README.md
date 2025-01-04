@@ -30,7 +30,7 @@
     
 2. Clone the repository:
     ```bash
-    git clone git clone https://github.com/kevinhamza/Devin.git
+    git clone https://github.com/kevinhamza/Devin.git
     cd Devin
     ```
 
