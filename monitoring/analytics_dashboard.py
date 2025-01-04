@@ -16,7 +16,7 @@ from threading import Thread
 
 app = Flask(__name__)
 
-class AnalyticsDashboard:
+class generate_dashboard:
     def __init__(self, static_dir="static", update_interval=30):
         self.static_dir = static_dir
         self.update_interval = update_interval
