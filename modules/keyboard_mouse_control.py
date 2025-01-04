@@ -5,7 +5,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
-class KeyboardMouseControl:
+class control_input:
     """
     Provides functionalities for controlling keyboard and mouse actions.
     """
