@@ -44,7 +44,7 @@ class Task:
     def __str__(self):
         return f"Task(name={self.name}, type={self.task_type}, next_run={self.run_time})"
 
-class Scheduler:
+class schedule_tasks:
     """
     Manages the scheduling and execution of tasks.
     """
