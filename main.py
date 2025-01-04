@@ -1,9 +1,9 @@
 import os
+import psutil
 import sys
 import time
 import json
 import logging
-import psutil
 import socket
 from threading import Thread
 from datetime import datetime
@@ -19,8 +19,16 @@ from modules.voice_assistant.voice_recognition import recognize_command
 from ai_integrations.chatgpt_connector import ChatGPTConnector
 from ai_integrations.copilot_connector import CopilotConnector
 from utils.logger import setup_logger
-from monitoring.cpu_usage import monitor_cpu
-from monitoring.analytics_dashboard import generate_dashboard
+from monitoring.cpu_usage import monitor_cpu  # PC-specific
+from monitoring.analytics_dashboard import generate_dashboard  # PC-specific
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Retrieve the API keys from environment variables
+chatgpt_api_key = os.getenv("CHATGPT_API_KEY")
+copilot_api_key = os.getenv("COPILOT_API_KEY")
 
 # Global Constants
 VERSION = "1.0.0"
@@ -29,6 +37,7 @@ WAKE_WORD = "Hey Devin"
 USER_VOICE_PROFILE = "path/to/user_voice_profile"
 TASK_MEMORY_FILE = "task_memory.json"
 SAFE_PORTS = [80, 443, 22]
+os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
 
 # Initialize logging
 setup_logger("app.log")
@@ -37,8 +46,10 @@ log = logging.getLogger(APP_NAME)
 # AI Models and Translators
 translator = Translator()
 nlp_pipeline = pipeline("text2text-generation", model="t5-large")  # Example NLP model
-chatgpt = ChatGPTConnector(api_key="your-chatgpt-api-key")
-copilot = CopilotConnector(api_key="your-copilot-api-key")
+
+# Initialize the connectors with the API keys
+chatgpt = ChatGPTConnector(api_key=chatgpt_api_key)
+copilot = CopilotConnector(api_key=copilot_api_key)
 
 # Utility Functions
 def load_preferences():
@@ -89,7 +100,7 @@ def monitor_task_queue():
 def control_remote_device(ip, port, command):
     try:
         print(f"Connecting to device at {ip}:{port}...")
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:  # PC-specific
             s.connect((ip, port))
             s.sendall(command.encode())
             response = s.recv(1024).decode()
@@ -107,18 +118,19 @@ def control_iot_device(device_name, action):
 
 # Threat Detection
 def detect_threats():
-    connections = psutil.net_connections()
+    # PC-specific: Detecting network threats based on open ports
+    connections = psutil.net_connections()  # PC-specific
     for conn in connections:
         if conn.status == "LISTEN" and conn.laddr.port not in SAFE_PORTS:
             print(f"Potential threat detected on port {conn.laddr.port}!")
 
-# System Dashboard
+# System Dashboard (PC-specific)
 def show_system_dashboard():
-    cpu_usage = psutil.cpu_percent(interval=1)
-    memory = psutil.virtual_memory()
-    print(f"CPU Usage: {cpu_usage}%")
-    print(f"Memory Usage: {memory.percent}%")
-    print(f"Available Memory: {memory.available / (1024**2):.2f} MB")
+    cpu_usage = psutil.cpu_percent(interval=1)  # PC-specific
+    memory = psutil.virtual_memory()  # PC-specific
+    print(f"CPU Usage: {cpu_usage}%")  # PC-specific
+    print(f"Memory Usage: {memory.percent}%")  # PC-specific
+    print(f"Available Memory: {memory.available / (1024**2):.2f} MB")  # PC-specific
 
 # AI Response Handling
 def translate_input(user_input, target_language="en"):
@@ -149,12 +161,13 @@ def handle_command(command):
     elif "cloud" in command:
         manage_cloud_resources()
     elif "system dashboard" in command:
-        show_system_dashboard()
+        # Show system dashboard only on PC
+        show_system_dashboard()  # PC-specific
     elif "control remote" in command:
         ip = "192.168.1.100"  # Example
         port = 12345
         remote_command = "shutdown"
-        control_remote_device(ip, port, remote_command)
+        control_remote_device(ip, port, remote_command)  # PC-specific
     elif "smart light" in command:
         control_iot_device("Smart Light", "turn on")
     else:
@@ -165,8 +178,8 @@ def handle_voice_interaction():
     print("Listening for wake word...")
     while True:
         if detect_wake_word(WAKE_WORD):
-            if verify_speaker(USER_VOICE_PROFILE):
-                command = recognize_command()
+            if verify_speaker(USER_VOICE_PROFILE):  # Mobile/PC-compatible
+                command = recognize_command()  # Mobile/PC-compatible
                 if command:
                     handle_command(command)
         time.sleep(1)
