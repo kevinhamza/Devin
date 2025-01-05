@@ -181,6 +181,21 @@ def get_audio_frame():
     audio_frame = stream.read(512)
     return audio_frame
 
+# def handle_voice_interaction():
+#     print("Listening for wake word...")
+#     try:
+#         detector = WakeWordDetector(
+#             access_key="VktnNTGZEo/yIvoys2/9xLkNx6lDGXgLShF1MNSqVvN/UE+HW7zsdw==",
+#             keyword_model_path="modules/voice_assistant/Hey-Devin_en_windows_v3_0_0.ppn",
+#             sensitivity=0.5
+#         )
+#         while True:
+#             audio_frame = get_audio_frame()
+#             if detector.detect_wake_word(audio_frame):
+#                 print("Wake word detected!")
+#     except Exception as e:
+#         log.error(f"Error in wake word detection: {e}")
+
 def handle_voice_interaction():
     print("Listening for wake word...")
     try:
@@ -189,12 +204,31 @@ def handle_voice_interaction():
             keyword_model_path="modules/voice_assistant/Hey-Devin_en_windows_v3_0_0.ppn",
             sensitivity=0.5
         )
+        pa = pyaudio.PyAudio()
+        stream = pa.open(
+            format=pyaudio.paInt16,
+            channels=1,
+            rate=16000,
+            input=True,
+            frames_per_buffer=512
+        )
+        print("Porcupine initialized. Ready to detect wake word.")
+
         while True:
-            audio_frame = get_audio_frame()
-            if detector.detect_wake_word(audio_frame):
+            audio_frame = stream.read(512, exception_on_overflow=False)
+            pcm = [int.from_bytes(audio_frame[i:i+2], byteorder="little", signed=True)
+                   for i in range(0, len(audio_frame), 2)]
+
+            wake_word_index = detector.process(pcm)
+            if wake_word_index >= 0:
                 print("Wake word detected!")
+                # Additional logic for handling voice commands
     except Exception as e:
         log.error(f"Error in wake word detection: {e}")
+    finally:
+        stream.stop_stream()
+        stream.close()
+        pa.terminate()
 
 # Main Function
 def main():
