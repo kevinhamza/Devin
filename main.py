@@ -22,6 +22,7 @@ from utils.logger import setup_logger
 from monitoring.cpu_usage import monitor_cpu  # PC-specific
 from monitoring.analytics_dashboard import generate_dashboard  # PC-specific
 from dotenv import load_dotenv
+import pyaudio
 
 # Load environment variables from .env file
 load_dotenv()
@@ -173,6 +174,16 @@ def handle_command(command):
     else:
         response = chatgpt.execute_command(command)
         print(f"Result: {response if response else 'Failed to execute command.'}")
+
+def get_audio_frame():
+    pa = pyaudio.PyAudio()
+    stream = pa.open(format=pyaudio.paInt16,
+                     channels=1,
+                     rate=16000,
+                     input=True,
+                     frames_per_buffer=512)
+    audio_frame = stream.read(512)
+    return audio_frame
 
 # def handle_voice_interaction():
 #     print("Listening for wake word...")
