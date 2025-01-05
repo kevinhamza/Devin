@@ -41,8 +41,8 @@ SAFE_PORTS = [80, 443, 22]
 os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
 
 # Initialize logging
-setup_logger("app.log")
-log = logging.getLogger(APP_NAME)
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger("Devin")
 
 # AI Models and Translators
 translator = Translator()
@@ -204,6 +204,7 @@ def handle_voice_interaction():
             keyword_model_path="modules/voice_assistant/Hey-Devin_en_windows_v3_0_0.ppn",
             sensitivity=0.5
         )
+        
         pa = pyaudio.PyAudio()
         stream = pa.open(
             format=pyaudio.paInt16,
@@ -215,12 +216,9 @@ def handle_voice_interaction():
         print("Porcupine initialized. Ready to detect wake word.")
 
         while True:
-            audio_frame = stream.read(512, exception_on_overflow=False)
-            pcm = [int.from_bytes(audio_frame[i:i+2], byteorder="little", signed=True)
-                   for i in range(0, len(audio_frame), 2)]
-
-            # Ensure that you pass the correct argument to detect_wake_word()
-            wake_word_index = detector.detect_wake_word(pcm)  # This should work now
+            audio_frame = stream.read(512, exception_on_overflow=False)  # Capture audio frame
+            # Call detect_wake_word directly with the audio frame
+            wake_word_index = detector.detect_wake_word(audio_frame)  # Ensure this is the correct call (single argument)
             if wake_word_index >= 0:
                 print("Wake word detected!")
                 # Additional logic for handling voice commands
@@ -243,6 +241,9 @@ def main():
     except Exception as e:
         log.error(f"Unexpected error: {e}", exc_info=True)
 
+# if __name__ == "__main__":
+#     WAKE_WORD = load_preferences().get("wake_word", WAKE_WORD)
+#     main()
+
 if __name__ == "__main__":
-    WAKE_WORD = load_preferences().get("wake_word", WAKE_WORD)
-    main()
+    handle_voice_interaction()
