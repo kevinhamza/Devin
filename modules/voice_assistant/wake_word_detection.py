@@ -21,7 +21,7 @@ class detect_wake_word:
     Detects the wake word 'Hey Devin' using Porcupine library.
     """
 
-    def __init__(self, sensitivity=0.5, keyword_model_path, log_file="wake_word_detection.log"):
+    def __init__(self, keyword_model_path, sensitivity=0.5, log_file="wake_word_detection.log"):
         """
         Initializes the WakeWordDetector.
 
