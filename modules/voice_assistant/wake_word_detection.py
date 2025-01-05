@@ -138,8 +138,8 @@ class WakeWordDetector:
 
 if __name__ == "__main__":
     # Example usage
-    model_path = "path/to/Hey-Devin_en_windows_v3_0_0.ppn"  # Replace with your actual keyword model path
-    access_key = "YOUR_ACCESS_KEY_HERE"  # Replace with your actual access key
+    model_path = "modules/voice_assistant/Hey-Devin_en_windows_v3_0_0/Hey-Devin_en_windows_v3_0_0.ppn"  # Replace with your actual keyword model path
+    access_key = "VktnNTGZEo/yIvoys2/9xLkNx6lDGXgLShF1MNSqVvN/UE+HW7zsdw=="  # Replace with your actual access key
 
     try:
         detector = WakeWordDetector(keyword_model_path=model_path, access_key=access_key)
