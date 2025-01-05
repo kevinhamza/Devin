@@ -6,7 +6,8 @@ from threading import Thread, Event
 import time
 
 class WakeWordDetector:
-    def __init__(self, keyword_model_path, sensitivity=0.5, access_key=None, log_file="wake_word_detection.log"):
+    def __init__(self, keyword_model_path, sensitivity=0.5, access_key=None, log_file="wake_word_detection.log", audio_device_index=0):
+        self.audio_device_index = audio_device_index
         if access_key is None:
             raise ValueError("An access key is required for Porcupine initialization.")
 
@@ -44,49 +45,50 @@ class WakeWordDetector:
             logging.error(f"Failed to initialize PyAudio: {e}")
             raise
 
-    def detect_wake_word(self):
+    def start_detection(self):
+        logging.info("Starting wake word detection...")
+        self.running = True
+        self.stop_event.clear()
+
+        # Create a new thread and start detection
+        detection_thread = Thread(target=self._detect_wake_word_thread)
+        detection_thread.daemon = True
+        detection_thread.start()  # Start the thread
+
+    def _detect_wake_word_thread(self):
         try:
             self.stream = self.audio.open(
                 rate=self.porcupine.sample_rate,
                 channels=1,
                 format=pyaudio.paInt16,
                 input=True,
+                input_device_index=self.audio_device_index,
                 frames_per_buffer=self.porcupine.frame_length
             )
-            logging.info("Audio stream opened successfully.")
+            logging.info("Audio stream opened for wake word detection.")
 
-            while self.running and not self.stop_event.is_set():
-                try:
-                    pcm = self.stream.read(self.porcupine.frame_length, exception_on_overflow=False)
-                    pcm = struct.unpack_from("h" * self.porcupine.frame_length, pcm)
-
-                    # Process audio frame with Porcupine
-                    result = self.porcupine.process(pcm)
-                    if result >= 0:
-                        logging.info("Wake word detected!")
-                        self.on_wake_word_detected()
-                except Exception as e:
-                    logging.error(f"Error during audio processing: {e}")
+            # Continuously capture audio frames
+            while self.running:
+                audio_frame = self.stream.read(self.porcupine.frame_length, exception_on_overflow=False)
+                wake_word_index = self.porcupine.process(audio_frame)
+                
+                if wake_word_index >= 0:
+                    self.on_wake_word_detected()
+                    break  # Optional: stop the detection here or continue as needed
 
         except Exception as e:
-            logging.error(f"Failed to start audio stream: {e}")
-            self.stop_detection()
-
-    def start_detection(self):
-        logging.info("Starting wake word detection...")
-        self.running = True
-        self.stop_event.clear()
-
-        # Create a new thread but use a target without invoking it
-        detection_thread = Thread(target=self._detect_wake_word_thread)
-        detection_thread.daemon = True
-        detection_thread.start()  # Start the thread
-
-    def _detect_wake_word_thread(self):
-        self.detect_wake_word()  # Call the detect_wake_word inside this method
+            logging.error(f"Error in wake word detection: {e}")
+        
+        finally:
+            # Close the stream and terminate PyAudio
+            if hasattr(self, 'stream'):
+                self.stream.stop_stream()
+                self.stream.close()
+            self.audio.terminate()
+            logging.info("Audio stream closed.")
 
     def on_wake_word_detected(self):
-        logging.info("Wake word callback invoked. Override 'on_wake_word_detected' for custom behavior.")
+        logging.info("Wake word detected!")
         print("Wake word detected! Performing the next action...")
 
     def stop_detection(self):
@@ -113,7 +115,7 @@ if __name__ == "__main__":
 
     try:
         detector = WakeWordDetector(keyword_model_path=model_path, access_key=access_key)
-        detector.start_detection()
+        detector.start_detection()  # Correctly start detection with this method
         print("Listening for 'Hey Devin'... Press Ctrl+C to stop.")
 
         # Run the detection in a clean way
