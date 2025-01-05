@@ -1,11 +1,9 @@
 import pvporcupine
 import pyaudio
 import struct
-import os
 import logging
 from threading import Thread, Event
 import time
-
 
 class WakeWordDetector:
     def __init__(self, keyword_model_path, sensitivity=0.5, access_key=None, log_file="wake_word_detection.log"):
@@ -46,12 +44,6 @@ class WakeWordDetector:
             logging.error(f"Failed to initialize PyAudio: {e}")
             raise
 
-    def start_detection(self):
-        logging.info("Starting wake word detection...")
-        self.running = True
-        self.stop_event.clear()
-        Thread(target=self._detect_wake_word, daemon=True).start()
-
     def _detect_wake_word(self):
         try:
             self.stream = self.audio.open(
@@ -80,6 +72,13 @@ class WakeWordDetector:
             logging.error(f"Failed to start audio stream: {e}")
             self.stop_detection()
 
+    def start_detection(self):
+        logging.info("Starting wake word detection...")
+        self.running = True
+        self.stop_event.clear()
+        # Starting the detection in a separate thread
+        Thread(target=self._detect_wake_word, daemon=True).start()
+
     def on_wake_word_detected(self):
         logging.info("Wake word callback invoked. Override 'on_wake_word_detected' for custom behavior.")
         print("Wake word detected! Performing the next action...")
@@ -101,7 +100,6 @@ class WakeWordDetector:
         if self.audio:
             self.audio.terminate()
             logging.info("PyAudio resources terminated.")
-
 
 if __name__ == "__main__":
     model_path = "modules/voice_assistant/Hey-Devin_en_windows_v3_0_0.ppn"  # Replace with your actual keyword model path
