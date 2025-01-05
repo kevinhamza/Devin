@@ -50,12 +50,13 @@ class WakeWordDetector:
         self.stop_event.clear()
 
         # Create a new thread and start detection
-        detection_thread = Thread(target=self._detect_wake_word_thread)
+        detection_thread = Thread(target=self.detect_wake_word)  # No arguments passed here
         detection_thread.daemon = True
         detection_thread.start()  # Start the thread
 
-    def _detect_wake_word_thread(self):
+    def detect_wake_word(self):
         try:
+            # Open the audio stream
             self.stream = self.audio.open(
                 rate=self.porcupine.sample_rate,
                 channels=1,
@@ -70,14 +71,14 @@ class WakeWordDetector:
             while self.running:
                 audio_frame = self.stream.read(self.porcupine.frame_length, exception_on_overflow=False)
                 wake_word_index = self.porcupine.process(audio_frame)
-                
+
                 if wake_word_index >= 0:
                     self.on_wake_word_detected()
                     break  # Optional: stop the detection here or continue as needed
 
         except Exception as e:
             logging.error(f"Error in wake word detection: {e}")
-        
+
         finally:
             # Close the stream and terminate PyAudio
             if hasattr(self, 'stream'):
