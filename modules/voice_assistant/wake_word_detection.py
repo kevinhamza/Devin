@@ -77,8 +77,8 @@ class WakeWordDetector:
         self.running = True
         self.stop_event.clear()
 
-        # Correct thread creation
-        detection_thread = Thread(target=self.detect_wake_word)  # Use method reference correctly
+        # Correct thread creation: No arguments passed
+        detection_thread = Thread(target=self.detect_wake_word)  # Direct method reference without invocation
         detection_thread.daemon = True
         detection_thread.start()  # Start the thread
 
