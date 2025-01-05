@@ -219,7 +219,8 @@ def handle_voice_interaction():
             pcm = [int.from_bytes(audio_frame[i:i+2], byteorder="little", signed=True)
                    for i in range(0, len(audio_frame), 2)]
 
-            wake_word_index = detector.detect_wake_word(pcm)  # Correct method call
+            # Ensure that you pass the correct argument to detect_wake_word()
+            wake_word_index = detector.detect_wake_word(pcm)  # This should work now
             if wake_word_index >= 0:
                 print("Wake word detected!")
                 # Additional logic for handling voice commands
