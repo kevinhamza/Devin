@@ -1,37 +1,14 @@
-"""
-wake_word_detection.py
-----------------------
-This module detects the wake word "Hey Devin" using the Porcupine library.
-
-Dependencies:
-- pvporcupine (Wake word detection)
-- pyaudio (Audio input)
-- logging (Error and event logging)
-"""
-
 import pvporcupine
 import pyaudio
 import struct
 import os
 import logging
-from threading import Thread
+from threading import Thread, Event
+import time
 
 
 class WakeWordDetector:
-    """
-    Detects the wake word 'Hey Devin' using the Porcupine library.
-    """
-
     def __init__(self, keyword_model_path, sensitivity=0.5, access_key=None, log_file="wake_word_detection.log"):
-        """
-        Initializes the WakeWordDetector.
-
-        Args:
-            keyword_model_path (str): Path to the keyword model file for "Hey Devin."
-            sensitivity (float): Sensitivity level for wake word detection (0 to 1).
-            access_key (str): Picovoice Access Key.
-            log_file (str): Path to the log file for recording events and errors.
-        """
         if access_key is None:
             raise ValueError("An access key is required for Porcupine initialization.")
 
@@ -41,6 +18,7 @@ class WakeWordDetector:
         self.log_file = log_file
         self.running = False
         self.stream = None
+        self.stop_event = Event()
 
         # Setup logging
         logging.basicConfig(
@@ -69,17 +47,12 @@ class WakeWordDetector:
             raise
 
     def start_detection(self):
-        """
-        Starts the wake word detection process in a separate thread.
-        """
         logging.info("Starting wake word detection...")
         self.running = True
+        self.stop_event.clear()
         Thread(target=self._detect_wake_word, daemon=True).start()
 
     def _detect_wake_word(self):
-        """
-        Internal method that continuously listens for the wake word.
-        """
         try:
             self.stream = self.audio.open(
                 rate=self.porcupine.sample_rate,
@@ -90,7 +63,7 @@ class WakeWordDetector:
             )
             logging.info("Audio stream opened successfully.")
 
-            while self.running:
+            while self.running and not self.stop_event.is_set():
                 try:
                     pcm = self.stream.read(self.porcupine.frame_length, exception_on_overflow=False)
                     pcm = struct.unpack_from("h" * self.porcupine.frame_length, pcm)
@@ -108,19 +81,13 @@ class WakeWordDetector:
             self.stop_detection()
 
     def on_wake_word_detected(self):
-        """
-        Callback triggered when the wake word is detected.
-        Override this method to define custom behavior.
-        """
         logging.info("Wake word callback invoked. Override 'on_wake_word_detected' for custom behavior.")
         print("Wake word detected! Performing the next action...")
 
     def stop_detection(self):
-        """
-        Stops the wake word detection process.
-        """
         logging.info("Stopping wake word detection...")
         self.running = False
+        self.stop_event.set()
 
         if self.stream:
             self.stream.stop_stream()
@@ -137,8 +104,7 @@ class WakeWordDetector:
 
 
 if __name__ == "__main__":
-    # Example usage
-    model_path = "modules/voice_assistant/Hey-Devin_en_windows_v3_0_0/Hey-Devin_en_windows_v3_0_0.ppn"  # Replace with your actual keyword model path
+    model_path = "modules/voice_assistant/Hey-Devin_en_windows_v3_0_0.ppn"  # Replace with your actual keyword model path
     access_key = "VktnNTGZEo/yIvoys2/9xLkNx6lDGXgLShF1MNSqVvN/UE+HW7zsdw=="  # Replace with your actual access key
 
     try:
@@ -146,9 +112,10 @@ if __name__ == "__main__":
         detector.start_detection()
         print("Listening for 'Hey Devin'... Press Ctrl+C to stop.")
 
-        # Keep the script running
-        while True:
-            pass
+        # Run the detection in a clean way
+        while not detector.stop_event.is_set():
+            time.sleep(1)
+
     except KeyboardInterrupt:
         print("\nStopping wake word detection...")
         detector.stop_detection()
