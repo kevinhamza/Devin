@@ -84,7 +84,6 @@ def execute_task_in_background(task_description):
     def task_runner(task):
         try:
             print(f"Executing task: {task}")
-            # Task-specific execution logic
             save_task_to_memory(task)
             print(f"Task '{task}' completed.")
         except Exception as e:
@@ -101,7 +100,7 @@ def monitor_task_queue():
 def control_remote_device(ip, port, command):
     try:
         print(f"Connecting to device at {ip}:{port}...")
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:  # PC-specific
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((ip, port))
             s.sendall(command.encode())
             response = s.recv(1024).decode()
@@ -112,26 +111,24 @@ def control_remote_device(ip, port, command):
 def control_iot_device(device_name, action):
     try:
         print(f"Performing '{action}' on IoT device: {device_name}")
-        # Placeholder for actual IoT logic
         print("Action completed.")
     except Exception as e:
         print(f"Failed to control IoT device '{device_name}': {e}")
 
 # Threat Detection
 def detect_threats():
-    # PC-specific: Detecting network threats based on open ports
-    connections = psutil.net_connections()  # PC-specific
+    connections = psutil.net_connections()
     for conn in connections:
         if conn.status == "LISTEN" and conn.laddr.port not in SAFE_PORTS:
             print(f"Potential threat detected on port {conn.laddr.port}!")
 
 # System Dashboard (PC-specific)
 def show_system_dashboard():
-    cpu_usage = psutil.cpu_percent(interval=1)  # PC-specific
-    memory = psutil.virtual_memory()  # PC-specific
-    print(f"CPU Usage: {cpu_usage}%")  # PC-specific
-    print(f"Memory Usage: {memory.percent}%")  # PC-specific
-    print(f"Available Memory: {memory.available / (1024**2):.2f} MB")  # PC-specific
+    cpu_usage = psutil.cpu_percent(interval=1)
+    memory = psutil.virtual_memory()
+    print(f"CPU Usage: {cpu_usage}%")
+    print(f"Memory Usage: {memory.percent}%")
+    print(f"Available Memory: {memory.available / (1024**2):.2f} MB")
 
 # AI Response Handling
 def translate_input(user_input, target_language="en"):
@@ -156,19 +153,18 @@ def generate_ai_response(user_input):
 def handle_command(command):
     log.info(f"Handling command: {command}")
     if "chat" in command:
-        start_chat_mode()
+        start_conversation()
     elif "schedule task" in command:
         schedule_tasks()
     elif "cloud" in command:
         manage_cloud_resources()
     elif "system dashboard" in command:
-        # Show system dashboard only on PC
-        show_system_dashboard()  # PC-specific
+        show_system_dashboard()
     elif "control remote" in command:
-        ip = "192.168.1.100"  # Example
+        ip = "192.168.1.100"
         port = 12345
         remote_command = "shutdown"
-        control_remote_device(ip, port, remote_command)  # PC-specific
+        control_remote_device(ip, port, remote_command)
     elif "smart light" in command:
         control_iot_device("Smart Light", "turn on")
     else:
@@ -185,15 +181,6 @@ def get_audio_frame():
     audio_frame = stream.read(512)
     return audio_frame
 
-# def handle_voice_interaction():
-#     print("Listening for wake word...")
-#     while True:
-#         if detect_wake_word(WAKE_WORD):
-#             if verify_speaker(USER_VOICE_PROFILE):  # Mobile/PC-compatible
-#                 command = recognize_command()  # Mobile/PC-compatible
-#                 if command:
-#                     handle_command(command)
-#         time.sleep(1)
 def handle_voice_interaction():
     print("Listening for wake word...")
     try:
@@ -203,11 +190,9 @@ def handle_voice_interaction():
             sensitivity=0.5
         )
         while True:
-            # Assume `get_audio_frame` is implemented to capture audio frames
             audio_frame = get_audio_frame()
             if detector.detect_wake_word(audio_frame):
                 print("Wake word detected!")
-                # Additional logic for handling voice commands
     except Exception as e:
         log.error(f"Error in wake word detection: {e}")
 
