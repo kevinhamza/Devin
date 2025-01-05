@@ -32,12 +32,12 @@ class detect_wake_word:
         """
         self.keyword = keyword
         self.sensitivity = sensitivity
-        self.access_key = "YOUR_ACCESS_KEY"  # Replace with your actual access key
+        self.access_key = ""  # Replace with your actual access key
         self.log_file = log_file
         self.stream = None
         self.porcupine = pvporcupine.create(
-            access_key=self.access_key,  # Pass the access key here
-            keywords=[self.keyword],
+            access_key=self.access_key,  # Your access key
+            keywords=[self.keyword],  # Use the custom wake word model
             sensitivities=[self.sensitivity]
         )
         self.running = False
