@@ -32,7 +32,7 @@ class detect_wake_word:
         """
         self.keyword = keyword
         self.sensitivity = sensitivity
-        self.access_key = ""  # Replace with your actual access key
+        self.access_key = "VktnNTGZEo/yIvoys2/9xLkNx6lDGXgLShF1MNSqVvN/UE+HW7zsdw=="  # Replace with your actual access key
         self.log_file = log_file
         self.stream = None
         self.porcupine = pvporcupine.create(
