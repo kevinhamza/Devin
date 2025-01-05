@@ -174,15 +174,31 @@ def handle_command(command):
         response = chatgpt.execute_command(command)
         print(f"Result: {response if response else 'Failed to execute command.'}")
 
+# def handle_voice_interaction():
+#     print("Listening for wake word...")
+#     while True:
+#         if detect_wake_word(WAKE_WORD):
+#             if verify_speaker(USER_VOICE_PROFILE):  # Mobile/PC-compatible
+#                 command = recognize_command()  # Mobile/PC-compatible
+#                 if command:
+#                     handle_command(command)
+#         time.sleep(1)
 def handle_voice_interaction():
     print("Listening for wake word...")
-    while True:
-        if detect_wake_word(WAKE_WORD):
-            if verify_speaker(USER_VOICE_PROFILE):  # Mobile/PC-compatible
-                command = recognize_command()  # Mobile/PC-compatible
-                if command:
-                    handle_command(command)
-        time.sleep(1)
+    try:
+        detector = WakeWordDetector(
+            access_key="VktnNTGZEo/yIvoys2/9xLkNx6lDGXgLShF1MNSqVvN/UE+HW7zsdw==",
+            keyword_model_path="modules/voice_assistant/Hey-Devin_en_windows_v3_0_0.ppn",
+            sensitivity=0.5
+        )
+        while True:
+            # Assume `get_audio_frame` is implemented to capture audio frames
+            audio_frame = get_audio_frame()
+            if detector.detect_wake_word(audio_frame):
+                print("Wake word detected!")
+                # Additional logic for handling voice commands
+    except Exception as e:
+        log.error(f"Error in wake word detection: {e}")
 
 # Main Function
 def main():
