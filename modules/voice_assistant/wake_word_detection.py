@@ -1,6 +1,5 @@
 import pvporcupine
 import pyaudio
-import struct
 import logging
 from threading import Thread, Event
 import time
