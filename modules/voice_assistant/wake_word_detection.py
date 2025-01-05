@@ -16,31 +16,31 @@ import os
 import logging
 from threading import Thread
 
-class detect_wake_word:
+
+class WakeWordDetector:
     """
-    Detects the wake word 'Hey Devin' using Porcupine library.
+    Detects the wake word 'Hey Devin' using the Porcupine library.
     """
 
-    def __init__(self, keyword_model_path, sensitivity=0.5, log_file="wake_word_detection.log"):
+    def __init__(self, keyword_model_path, sensitivity=0.5, access_key=None, log_file="wake_word_detection.log"):
         """
         Initializes the WakeWordDetector.
 
         Args:
-            sensitivity (float): Sensitivity level for wake word detection.
-            keyword (str): Keyword to detect. Default is 'hey_devin'.
+            keyword_model_path (str): Path to the keyword model file for "Hey Devin."
+            sensitivity (float): Sensitivity level for wake word detection (0 to 1).
+            access_key (str): Picovoice Access Key.
             log_file (str): Path to the log file for recording events and errors.
         """
+        if access_key is None:
+            raise ValueError("An access key is required for Porcupine initialization.")
+
         self.keyword_model_path = keyword_model_path
         self.sensitivity = sensitivity
-        self.access_key = "VktnNTGZEo/yIvoys2/9xLkNx6lDGXgLShF1MNSqVvN/UE+HW7zsdw=="  # Replace with your actual access key
+        self.access_key = access_key
         self.log_file = log_file
-        self.stream = None
-        self.porcupine = pvporcupine.create(
-            access_key=self.access_key,  # Your access key
-            keyword_paths=[self.keyword_model_path],
-            sensitivities=[self.sensitivity]
-        )
         self.running = False
+        self.stream = None
 
         # Setup logging
         logging.basicConfig(
@@ -51,8 +51,12 @@ class detect_wake_word:
 
         # Initialize Porcupine
         try:
-            self.porcupine = pvporcupine.create(keywords=[self.keyword], sensitivities=[self.sensitivity])
-            logging.info(f"Initialized Porcupine with keyword: {self.keyword} and sensitivity: {self.sensitivity}")
+            self.porcupine = pvporcupine.create(
+                access_key=self.access_key,
+                keyword_paths=[self.keyword_model_path],
+                sensitivities=[self.sensitivity]
+            )
+            logging.info("Initialized Porcupine with the provided keyword model.")
         except Exception as e:
             logging.error(f"Failed to initialize Porcupine: {e}")
             raise
@@ -85,7 +89,6 @@ class detect_wake_word:
                 frames_per_buffer=self.porcupine.frame_length
             )
             logging.info("Audio stream opened successfully.")
-            return self.porcupine.process(audio_frame) >= 0
 
             while self.running:
                 try:
@@ -132,13 +135,17 @@ class detect_wake_word:
             self.audio.terminate()
             logging.info("PyAudio resources terminated.")
 
+
 if __name__ == "__main__":
     # Example usage
+    model_path = "path/to/Hey-Devin_en_windows_v3_0_0.ppn"  # Replace with your actual keyword model path
+    access_key = "YOUR_ACCESS_KEY_HERE"  # Replace with your actual access key
+
     try:
-        detector = WakeWordDetector()
+        detector = WakeWordDetector(keyword_model_path=model_path, access_key=access_key)
         detector.start_detection()
         print("Listening for 'Hey Devin'... Press Ctrl+C to stop.")
-        
+
         # Keep the script running
         while True:
             pass
