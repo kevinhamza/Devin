@@ -77,11 +77,10 @@ class WakeWordDetector:
         self.running = True
         self.stop_event.clear()
 
-        # Correct thread creation to avoid passing extra arguments
-        detection_thread = Thread(target=self.detect_wake_word)  # Correct method reference
+        # Correct thread creation
+        detection_thread = Thread(target=self.detect_wake_word)  # Use method reference correctly
         detection_thread.daemon = True
         detection_thread.start()  # Start the thread
-        logging.info("Wake word detection thread started.")
 
     def on_wake_word_detected(self):
         logging.info("Wake word callback invoked. Override 'on_wake_word_detected' for custom behavior.")
