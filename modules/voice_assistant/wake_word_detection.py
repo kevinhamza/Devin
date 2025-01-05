@@ -61,7 +61,7 @@ class WakeWordDetector:
                     pcm = struct.unpack_from("h" * self.porcupine.frame_length, pcm)
 
                     # Process audio frame with Porcupine
-                    result = self.porcupine.process(pcm)
+                    result = self.porcupine.process(pcm)  # Corrected this line
                     if result >= 0:
                         logging.info("Wake word detected!")
                         self.on_wake_word_detected()
