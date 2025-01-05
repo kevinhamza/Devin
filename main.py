@@ -200,12 +200,12 @@ def handle_voice_interaction():
     print("Listening for wake word...")
     try:
         # Initialize the WakeWordDetector
-        detector = WakeWordDetector(
-            access_key="VktnNTGZEo/yIvoys2/9xLkNx6lDGXgLShF1MNSqVvN/UE+HW7zsdw==",
-            keyword_model_path="modules/voice_assistant/Hey-Devin_en_windows_v3_0_0.ppn",
-            sensitivity=0.5
-        )
-        
+        # detector = WakeWordDetector(
+        #     access_key="VktnNTGZEo/yIvoys2/9xLkNx6lDGXgLShF1MNSqVvN/UE+HW7zsdw==",
+        #     keyword_model_path="modules/voice_assistant/Hey-Devin_en_windows_v3_0_0.ppn",
+        #     sensitivity=0.5
+        # )
+        detector = WakeWordDetector()
         # Initialize pyaudio for capturing audio frames
         pa = pyaudio.PyAudio()
         stream = pa.open(
