@@ -199,12 +199,14 @@ def get_audio_frame():
 def handle_voice_interaction():
     print("Listening for wake word...")
     try:
+        # Initialize the WakeWordDetector
         detector = WakeWordDetector(
             access_key="VktnNTGZEo/yIvoys2/9xLkNx6lDGXgLShF1MNSqVvN/UE+HW7zsdw==",
             keyword_model_path="modules/voice_assistant/Hey-Devin_en_windows_v3_0_0.ppn",
             sensitivity=0.5
         )
         
+        # Initialize pyaudio for capturing audio frames
         pa = pyaudio.PyAudio()
         stream = pa.open(
             format=pyaudio.paInt16,
@@ -217,11 +219,10 @@ def handle_voice_interaction():
 
         while True:
             audio_frame = stream.read(512, exception_on_overflow=False)  # Capture audio frame
-            # Call detect_wake_word directly with the audio frame
-            wake_word_index = detector.detect_wake_word(audio_frame)  # Ensure this is the correct call (single argument)
-            if wake_word_index >= 0:
+            # Call detect_wake_word with the audio frame
+            if detector.detect_wake_word(audio_frame):
                 print("Wake word detected!")
-                # Additional logic for handling voice commands
+                # Additional logic for handling voice commands can be added here
     except Exception as e:
         log.error(f"Error in wake word detection: {e}")
     finally:
