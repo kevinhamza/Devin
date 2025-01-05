@@ -44,7 +44,7 @@ class WakeWordDetector:
             logging.error(f"Failed to initialize PyAudio: {e}")
             raise
 
-    def _detect_wake_word(self):
+    def detect_wake_word(self):
         try:
             self.stream = self.audio.open(
                 rate=self.porcupine.sample_rate,
