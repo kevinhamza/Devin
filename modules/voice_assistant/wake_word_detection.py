@@ -77,10 +77,13 @@ class WakeWordDetector:
         self.running = True
         self.stop_event.clear()
 
-        # Correct thread creation: No arguments passed
-        detection_thread = Thread(target=self.detect_wake_word)  # Direct method reference without invocation
+        # Create a new thread but use a target without invoking it
+        detection_thread = Thread(target=self._detect_wake_word_thread)
         detection_thread.daemon = True
         detection_thread.start()  # Start the thread
+
+    def _detect_wake_word_thread(self):
+        self.detect_wake_word()  # Call the detect_wake_word inside this method
 
     def on_wake_word_detected(self):
         logging.info("Wake word callback invoked. Override 'on_wake_word_detected' for custom behavior.")
