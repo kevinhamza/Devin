@@ -21,7 +21,7 @@ class detect_wake_word:
     Detects the wake word 'Hey Devin' using Porcupine library.
     """
 
-    def __init__(self, sensitivity=0.5, keyword="hey_devin", log_file="wake_word_detection.log"):
+    def __init__(self, sensitivity=0.5, keyword_model_path, log_file="wake_word_detection.log"):
         """
         Initializes the WakeWordDetector.
 
@@ -30,14 +30,14 @@ class detect_wake_word:
             keyword (str): Keyword to detect. Default is 'hey_devin'.
             log_file (str): Path to the log file for recording events and errors.
         """
-        self.keyword = keyword
+        self.keyword_model_path = keyword_model_path
         self.sensitivity = sensitivity
         self.access_key = "VktnNTGZEo/yIvoys2/9xLkNx6lDGXgLShF1MNSqVvN/UE+HW7zsdw=="  # Replace with your actual access key
         self.log_file = log_file
         self.stream = None
         self.porcupine = pvporcupine.create(
             access_key=self.access_key,  # Your access key
-            keywords=[self.keyword],  # Use the custom wake word model
+            keyword_paths=[self.keyword_model_path],
             sensitivities=[self.sensitivity]
         )
         self.running = False
@@ -85,6 +85,7 @@ class detect_wake_word:
                 frames_per_buffer=self.porcupine.frame_length
             )
             logging.info("Audio stream opened successfully.")
+            return self.porcupine.process(audio_frame) >= 0
 
             while self.running:
                 try:
