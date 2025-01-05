@@ -13,7 +13,7 @@ from modules.nlp_conversation import start_conversation
 from modules.keyboard_mouse_control import control_input
 from modules.scheduler import schedule_tasks
 from modules.cloud_tools import manage_cloud_resources
-from modules.voice_assistant.wake_word_detection import detect_wake_word
+from modules.voice_assistant.wake_word_detection import WakeWordDetector
 from modules.voice_assistant.speaker_verification import verify_speaker
 from modules.voice_assistant.voice_recognition import recognize_command
 from ai_integrations.chatgpt_connector import ChatGPTConnector
