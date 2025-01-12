@@ -4,6 +4,8 @@
 torch==2.0.1
 tensorflow
 transformers==4.33.0
+chardet
+huggingface-hub
 
 # Web frameworks and API support
 flask==3.0.0
