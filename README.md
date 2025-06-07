@@ -1,4 +1,4 @@
-# Devin: The Most Powerful AI Assistant  
+# Devin: The Most Powerful AI Assistant  (THIS IS THE FAIL PROJECT. WE ARE WORKING ON DEVIN-20 AND IT WILL WORK REALLY WELL BETTER THAN ANY SELF OPERATING SYSTEM)
 
 **Devin** is a groundbreaking AI assistant designed to perform virtually any task with unparalleled efficiency and intelligence. From ethical hacking to general-purpose utilities, Devin is equipped with cutting-edge features for developers, penetration testers, ethical hackers, cloud engineers, system administrators, and casual users alike.
 
