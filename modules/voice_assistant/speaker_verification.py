@@ -153,7 +153,7 @@ class verify_speaker:
             return False
 
 if __name__ == "__main__":
-    verifier = SpeakerVerification()
+    verifier = verify_speaker()
 
     print("1. Enroll a new voice profile")
     print("2. Verify a voice profile")

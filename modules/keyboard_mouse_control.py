@@ -1,3 +1,4 @@
+import time
 import pyautogui
 from pynput.keyboard import Key, Controller as KeyboardController
 from pynput.mouse import Controller as MouseController, Button
@@ -79,7 +80,7 @@ class control_input:
         pyautogui.dragTo(end_x, end_y, duration=duration)
 
 if __name__ == "__main__":
-    controller = KeyboardMouseControl()
+    controller = control_input()
     # Example actions
     controller.type_text("Hello, this is a test.")
     controller.press_key("enter")

@@ -6,7 +6,7 @@ responding to comments, and fetching analytics.
 """
 
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List, Dict
 from social_media_api import SocialMediaAPI
 

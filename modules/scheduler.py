@@ -128,7 +128,7 @@ if __name__ == "__main__":
     def sample_task():
         print(f"Task executed at {datetime.now()}!")
 
-    scheduler = Scheduler()
+    scheduler = schedule_tasks()
     scheduler.add_task(
         name="One-Time Task",
         action=sample_task,

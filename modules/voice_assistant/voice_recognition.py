@@ -31,6 +31,7 @@ class recognize_command:
             format="%(asctime)s - %(levelname)s - %(message)s"
         )
         logging.info("VoiceRecognition initialized.")
+        self.verifier = verify_speaker()
 
         # Load the Vosk model
         if not os.path.exists(self.model_path):
@@ -110,7 +111,7 @@ class recognize_command:
             if "hey devin" in recognized_text.lower():
                 print("Wake word detected. Verifying speaker...")
                 # Verify if the speaker is authorized (matches your voice)
-                if verify_speaker_identity(self.record_audio()):
+                if self.verifier.verify_voice("owner"):
                     logging.info("Speaker verified. Processing command.")
                     return recognized_text
                 else:
@@ -129,7 +130,7 @@ class recognize_command:
 if __name__ == "__main__":
     # Example usage
     model_dir = "models/vosk_model"
-    recognizer = VoiceRecognition(model_path=model_dir)
+    recognizer = recognize_command(model_path=model_dir)
 
     print("1. Record and recognize a single command")
     print("2. Continuously listen and recognize commands")

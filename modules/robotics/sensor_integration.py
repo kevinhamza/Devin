@@ -6,6 +6,7 @@ Handles integration and processing of camera, LIDAR, and other sensors for robot
 
 import cv2  # OpenCV for camera processing
 import logging
+import time
 from modules.utils.sensors import LIDARSensor, UltrasonicSensor  # Hypothetical sensor utilities
 from threading import Thread
 

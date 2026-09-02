@@ -88,7 +88,7 @@ class generate_dashboard:
 @app.route('/api/metrics', methods=['GET'])
 def get_metrics():
     """API endpoint to fetch system metrics."""
-    dashboard = AnalyticsDashboard()
+    dashboard = generate_dashboard()
     metrics = dashboard.collect_system_metrics()
     return jsonify(metrics)
 
@@ -104,7 +104,7 @@ if __name__ == '__main__':
     os.makedirs("static", exist_ok=True)
 
     # Create an AnalyticsDashboard instance
-    dashboard = AnalyticsDashboard()
+    dashboard = generate_dashboard()
 
     # Generate initial visualizations
     dashboard.generate_visualizations()
