@@ -58,6 +58,33 @@
 7. Access Devin:
 - Open your browser and navigate to http://localhost:1337.
 
+## 🤖 Agent Core (LLM reasoning + OS control)
+The `agent/` package is a Devin-style agent: it reasons with an LLM, calls tools to
+act on your machine, and asks for your permission before anything with side effects.
+
+```bash
+pip install openai anthropic requests python-dotenv PyYAML   # minimal deps
+python -m agent                       # interactive chat
+python -m agent --once "list the files in this directory"
+python -m agent --provider ollama --model llama3.1
+```
+
+Switch the reasoning backend via `.env` / `config/agent.yaml`:
+
+| Variable | Purpose |
+|---|---|
+| `DEVIN_PROVIDER` | `openai`, `anthropic` or `ollama` |
+| `DEVIN_MODEL` | model name (defaults: `gpt-4o`, `claude-3-5-sonnet-latest`, `llama3.1`) |
+| `DEVIN_BASE_URL` | custom endpoint (Ollama host, OpenAI-compatible proxy, …) |
+| `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` | provider credentials (Ollama needs none) |
+| `DEVIN_REQUIRE_CONFIRMATION` | `true` (default) prompts before dangerous actions |
+
+Built-in tools: `run_shell`, `read_file`, `write_file`, `list_directory`,
+`system_info`, and `os_control` (keyboard typing, key presses, hotkeys, mouse
+move/click/scroll via `modules/keyboard_mouse_control.py`). Shell, file writes and
+keyboard/mouse control are marked dangerous and only run after you answer `y` at
+the permission prompt (`--yes` auto-approves; use with care).
+
 ## 🎤 Voice Control
 Devin supports voice commands via `speech_recognition` and `pyttsx3`.
 1. Ensure a microphone is connected and functioning.

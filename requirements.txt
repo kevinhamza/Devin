@@ -173,6 +173,7 @@ nodeenv==1.8.0
 oauthlib==3.2.2
 onnxruntime==1.17.1
 openai==1.12.0
+anthropic>=0.40,<2
 opentelemetry-api==1.23.0
 opentelemetry-exporter-otlp-proto-common==1.23.0
 opentelemetry-exporter-otlp-proto-grpc==1.23.0
@@ -337,6 +338,7 @@ numpy
 oauthlib==3.2.2
 onnxruntime==1.17.1
 openai==1.12.0
+anthropic>=0.40,<2
 opentelemetry-api==1.23.0
 opentelemetry-exporter-otlp-proto-common==1.23.0
 opentelemetry-exporter-otlp-proto-grpc==1.23.0

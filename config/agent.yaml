@@ -1,0 +1,24 @@
+# Devin agent core configuration.
+# Environment variables (DEVIN_PROVIDER, DEVIN_MODEL, OPENAI_API_KEY, ...) take
+# precedence over everything in this file. Never commit real API keys here.
+
+# Which reasoning backend to use: openai | anthropic | ollama
+provider: ollama
+
+# Ask before running shell commands, writing files, or controlling keyboard/mouse.
+require_confirmation: true
+
+temperature: 0.2
+max_tokens: 2048
+max_tool_iterations: 12
+
+providers:
+  openai:
+    model: gpt-4o
+    # api_key: set OPENAI_API_KEY in .env instead
+  anthropic:
+    model: claude-3-5-sonnet-latest
+    # api_key: set ANTHROPIC_API_KEY in .env instead
+  ollama:
+    model: llama3.1
+    base_url: http://localhost:11434
