@@ -130,7 +130,7 @@ class manage_cloud_resources:
 
 # Example usage
 if __name__ == "__main__":
-    cloud_tools = CloudTools()
+    cloud_tools = manage_cloud_resources()
 
     # AWS Example
     cloud_tools.aws_connect('ec2')

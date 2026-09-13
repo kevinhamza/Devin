@@ -109,8 +109,8 @@ def detect_command_injection(url):
         cmd_payload = "; ls"
         test_url = f"{url}?cmd={cmd_payload}"
         response = requests.get(test_url, timeout=10)
-        if "root" in response
-return True
+        if "root" in response.text:
+            return True
     except Exception as e:
         print(f"[-] Command Injection detection failed for {url}: {e}")
     return False

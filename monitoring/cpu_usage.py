@@ -75,7 +75,7 @@ def get_cpu_usage():
     """
     API Endpoint: Returns the current CPU usage as JSON.
     """
-    cpu_usage = CPUUsage()
+    cpu_usage = monitor_cpu()
     usage = cpu_usage.log_cpu_usage()
     return jsonify({
         "timestamp": datetime.now().isoformat(),
@@ -93,10 +93,10 @@ if __name__ == "__main__":
 
     if args.api:
         print("Starting CPU Usage Monitoring API server...")
-        cpu_usage = CPUUsage()
+        cpu_usage = monitor_cpu()
         cpu_usage.run_monitoring_in_background(interval=args.interval)  # Run monitoring in the background
         app.run(host='0.0.0.0', port=5000)
     else:
         print(f"Starting CPU Usage Monitoring (Interval: {args.interval}s)...")
-        cpu_usage = CPUUsage()
+        cpu_usage = monitor_cpu()
         cpu_usage.monitor_cpu(interval=args.interval)

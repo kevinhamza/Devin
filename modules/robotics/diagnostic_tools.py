@@ -7,6 +7,7 @@ import logging
 import datetime
 import subprocess
 import platform
+import shutil
 
 # Set up logging for diagnostics
 LOG_FILE = "robotics_diagnostics.log"

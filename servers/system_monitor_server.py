@@ -2,6 +2,7 @@
 
 import psutil
 import logging
+import subprocess
 
 # Initialize logging
 logging.basicConfig(level=logging.INFO)

@@ -5,6 +5,7 @@ Provides advanced speech recognition and translation functionalities.
 Supports multiple languages and real-time transcription and translation.
 """
 
+import os
 import speech_recognition as sr
 from googletrans import Translator
 

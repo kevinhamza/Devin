@@ -69,7 +69,7 @@ class start_conversation:
 if __name__ == "__main__":
     # Example usage of the NLPConversation class
     try:
-        nlp_conversation = NLPConversation()
+        nlp_conversation = start_conversation()
         user_input = input("Ask Devin: ")
         response = nlp_conversation.respond_to_user(user_input)
         print(f"Devin: {response}")

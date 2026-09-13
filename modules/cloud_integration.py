@@ -7,6 +7,7 @@ cloud providers, ensuring flexibility and scalability.
 """
 
 import os
+import json
 import boto3  # AWS SDK for Python
 import google.auth
 from google.cloud import storage, functions_v1
